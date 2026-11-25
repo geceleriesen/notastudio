@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NotaStüdyo Maestro Pro — DAW & AI Müzik Prodüksiyon Stüdyosu | geceleriesen</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --studio-bg: #060911;
+      --rack-bg: #0c1220;
+      --rack-border: #1e293b;
+      --accent-gold: #f59e0b;
+      --accent-emerald: #10b981;
+    }
+
+    body {
+      background-color: var(--studio-bg);
+      background-image:
+        radial-gradient(circle at 18% 0%, rgba(245, 158, 11, 0.07), transparent 38%),
+        radial-gradient(circle at 85% 10%, rgba(16, 185, 129, 0.05), transparent 36%),
+        linear-gradient(180deg, #070b14 0%, #05080f 100%);
+    }
+
+    /* Stüdyo Rack-Mount Panel Dokusu ve Köşe Vidaları */
+    .studio-rack {
+      background: linear-gradient(180deg, rgba(17, 25, 42, 0.94) 0%, rgba(10, 15, 27, 0.97) 100%);
+      border: 1px solid rgba(51, 65, 85, 0.75);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 8px 24px rgba(0, 0, 0, 0.45);
+      position: relative;
+    }
+
+    .rack-screw {
+      width: 7px;
+      height: 7px;
+      border-radius: 9999px;
+      background: radial-gradient(circle at 35% 35%, #64748b, #1e293b 70%, #0f172a);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      box-shadow: inset 0 1px 1px rgba(0,0,0,0.8);
+      pointer-events: none;
+    }
+
+    /* Dijital LCD Stüdyo Göstergesi */
+    .studio-lcd {
+      background: linear-gradient(180deg, #04070d 0%, #09111e 100%);
+      border: 1px solid rgba(245, 158, 11, 0.28);
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.85), 0 0 12px rgba(245, 158, 11, 0.08);
+    }
+
+    /* Canlı LED Durum Işığı */
+    @keyframes studioPulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px #10b981; }
+      50% { opacity: 0.45; box-shadow: 0 0 2px #10b981; }
+    }
+    .studio-led-live {
+      animation: studioPulse 2.2s infinite ease-in-out;
+    }
+
+    /* Kurcalamaya Dayanıklı Şeffaf Marka İmzası (geceleriesen) */
+    .geceleriesen-brand-seal {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.10), rgba(15, 23, 42, 0.65));
+      border: 1px solid rgba(245, 158, 11, 0.26);
+      backdrop-filter: blur(6px);
+      opacity: 0.72;
+      transition: opacity 0.25s ease, border-color 0.25s ease;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+    .geceleriesen-brand-seal:hover {
+      opacity: 0.98;
+      border-color: rgba(245, 158, 11, 0.55);
+    }
+
+    .geceleriesen-paper-watermark {
+      pointer-events: none !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      opacity: 0.22;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      letter-spacing: 0.14em;
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #070b14; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+  </style>
+</head>
+<body class="text-slate-100 h-screen flex flex-col overflow-hidden select-none">
+
+  <!-- Üst Stüdyo Konsolu ve Transport Çubuğu -->
+  <header id="studioTopHeader" class="studio-rack border-b border-slate-800/90 px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 shrink-0 z-20">
+    <!-- Sol Marka, Korumalı Watermark & Açık Proje Sekmeleri -->
+    <div class="flex items-center gap-2.5 flex-wrap">
+      <div class="flex items-center gap-2 pr-2 border-r border-slate-800/90">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/25 to-amber-600/10 border border-amber-500/50 flex items-center justify-center text-amber-400 font-bold text-xl shadow-inner">
+          𝄞
+        </div>
+        <div class="leading-tight">
+          <div class="flex items-center gap-1.5">
+            <h1 class="font-extrabold text-sm tracking-tight text-white">NotaStüdyo</h1>
+            <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 tracking-wider">DAW PRO</span>
+          </div>
+          <!-- Şeffaf ve Korumalı Sol Üst Watermark -->
+          <div id="geceleriesenBrandMark" data-wm-owner="geceleriesen" class="geceleriesen-brand-seal mt-0.5 px-1.5 py-0.2 rounded inline-flex items-center gap-1 text-[10px] font-mono text-amber-300/90" title="Open Source Audio & Score Workstation by geceleriesen">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 studio-led-live"></span>
+            <span class="font-bold tracking-wider">geceleriesen</span>
+            <span class="text-[8.5px] text-slate-400">• OSS</span>
+          </div>
+        </div>
+      </div>
+
+      <span id="engineBadge" class="text-[11px] px-2.5 py-1 rounded-lg bg-slate-900/90 text-emerald-400 border border-emerald-500/30 font-medium">Motor Hazır</span>
+
+      <div id="scoreTabs" class="flex items-center gap-1.5 ml-1 flex-wrap"></div>
+    </div>
+
+    <!-- Merkez Transport, Tempo, Süre & Dışa Aktarım Rack -->
+    <div class="flex items-center gap-2 bg-slate-950/90 border border-slate-800/90 px-2.5 py-1.5 rounded-xl flex-wrap shadow-inner">
+      <button id="btnPlay" onclick="renderAndPlay()" class="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-extrabold text-xs flex items-center gap-1.5 shadow-md shadow-amber-500/15 transition">
+        ▶ Sentezle & Çal
+      </button>
+      <button onclick="stopAudio()" class="px-2.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700/70 text-xs font-semibold transition">
+        ■ Durdur
+      </button>
+
+      <div class="h-5 w-px bg-slate-800 mx-0.5"></div>
+
+      <!-- Dijital LCD Tempo Modülü -->
+      <div class="studio-lcd px-2 py-0.5 rounded-lg flex items-center gap-1.5">
+        <span class="text-[10px] text-amber-400/90 font-bold tracking-wider">BPM</span>
+        <button onclick="changeBpm(-4)" class="w-4 h-4 rounded bg-slate-800 hover:bg-slate-700 text-[11px] font-bold leading-none">−</button>
+        <input id="bpmSlider" type="range" min="50" max="200" value="116" oninput="setBpm(this.value)" class="w-16 accent-amber-500 cursor-pointer" />
+        <button onclick="changeBpm(4)" class="w-4 h-4 rounded bg-slate-800 hover:bg-slate-700 text-[11px] font-bold leading-none">+</button>
+        <span id="bpmLabel" class="text-xs font-mono font-extrabold text-amber-300 w-14 text-right">116 BPM</span>
+      </div>
+
+      <div class="h-5 w-px bg-slate-800 mx-0.5"></div>
+
+      <select id="engineChoiceSelect" class="px-2 py-1 rounded-lg bg-slate-900 border border-amber-500/40 text-amber-300 text-[11px] font-semibold focus:outline-none" title="Sentez motorunu seçin">
+        <option value="studio_ai" selected>🌟 Stüdyo AI (Suno/ACE-Step)</option>
+        <option value="hybrid">🎛️ Hibrit (AI + Dizek)</option>
+        <option value="dsp_sheet">🎼 Dizek Nota (DSP)</option>
+      </select>
+
+      <select id="targetDurationSelect" class="px-2 py-1 rounded-lg bg-slate-900 border border-cyan-500/40 text-cyan-300 text-[11px] font-semibold focus:outline-none" title="Üretilecek şarkının hedef süresi (uzun şarkılar otomatik bölüm birleştirmeyle üretilir)">
+        <option value="0" selected>⏱️ Süre: Otomatik</option>
+        <option value="30">⏱️ 30 Saniye</option>
+        <option value="60">⏱️ 1 Dakika</option>
+        <option value="120">⏱️ 2 Dakika (Uzun)</option>
+        <option value="180">⏱️ 3 Dakika (2 Bölüm)</option>
+        <option value="240">⏱️ 4 Dakika (3 Bölüm)</option>
+      </select>
+
+      <label class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-900/90 border border-slate-700/80 text-[11px] cursor-pointer hover:border-slate-600" title="Ses dalgalı MP4 video klip de üretir">
+        <input id="chkExportMp4" type="checkbox" class="accent-amber-500" />
+        <span>🎬 .MP4 Klip</span>
+      </label>
+
+      <label class="px-2.5 py-1 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-slate-700/80 text-xs font-semibold cursor-pointer transition">
+        📤 Nota / PDF / MIDI Yükle
+        <input type="file" accept="image/*,.pdf,.mid,.midi,.xml,.musicxml,.mxl,.abc,.txt" class="hidden" onchange="uploadSheetImage(event)" />
+      </label>
+      <button onclick="createNewBlankScore()" class="px-2.5 py-1 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/35 text-xs font-semibold transition">
+        + Yeni Sayfa
+      </button>
+      <button onclick="saveCurrentScore()" class="px-2.5 py-1 rounded-lg bg-sky-600/20 hover:bg-sky-600/30 text-sky-300 border border-sky-500/35 text-xs font-semibold transition">
+        💾 Kaydet
+      </button>
+      <button onclick="exportScoreAsFile('mid')" title="Notayı Standart MIDI (.mid) dosyası olarak indir" class="px-2 py-1 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/35 text-xs font-semibold transition">
+        🎹 .MID
+      </button>
+      <button onclick="exportScoreAsFile('musicxml')" title="Notayı MuseScore / Finale uyumlu MusicXML olarak indir" class="px-2 py-1 rounded-lg bg-teal-600/20 hover:bg-teal-600/30 text-teal-300 border border-teal-500/35 text-xs font-semibold transition">
+        📄 .XML
+      </button>
+      <div id="exportFormatBar" class="hidden flex items-center gap-1 bg-slate-900 border border-amber-500/40 px-2 py-1 rounded-lg">
+        <span class="text-[11px] font-bold text-amber-300 mr-0.5" title="İstediğiniz formatta Farklı Kaydet penceresiyle bilgisayara kaydedin">📥 Farklı Kaydet:</span>
+        <button type="button" onclick="saveAsFormat('wav')" class="px-2 py-0.5 rounded bg-amber-500/20 hover:bg-amber-500/35 text-amber-200 border border-amber-500/40 text-[11px] font-bold transition">.WAV</button>
+        <button type="button" onclick="saveAsFormat('mp3')" class="px-2 py-0.5 rounded bg-emerald-500/20 hover:bg-emerald-500/35 text-emerald-200 border border-emerald-500/40 text-[11px] font-bold transition">.MP3</button>
+        <button type="button" onclick="saveAsFormat('mp4')" class="px-2 py-0.5 rounded bg-purple-500/20 hover:bg-purple-500/35 text-purple-200 border border-purple-500/40 text-[11px] font-bold transition">.MP4</button>
+        <button type="button" onclick="saveAsFormat('flac')" class="px-2 py-0.5 rounded bg-sky-500/20 hover:bg-sky-500/35 text-sky-200 border border-sky-500/40 text-[11px] font-bold transition">.FLAC</button>
+        <button type="button" onclick="saveAsFormat('ogg')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 text-[11px] font-bold transition">.OGG</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Stüdyo Orkestra Mikser Rafı (Enstrüman Havuzu) -->
+  <section class="studio-rack border-b border-slate-800/90 px-4 py-2 shrink-0">
+    <div class="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="rack-screw"></span>
+        <button onclick="toggleInstDrawer()" class="text-xs font-extrabold tracking-wide text-amber-400 hover:text-amber-300 flex items-center gap-1.5">
+          <span id="drawerArrow">▼</span> STÜDYO ORKESTRA MİKSERİ
+        </button>
+        <span id="activeCountBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/35">0 Çalgı</span>
+        <div id="categoryTabs" class="flex items-center gap-1"></div>
+      </div>
+
+      <div class="flex items-center gap-1 flex-wrap">
+        <span class="text-[10px] uppercase tracking-wider text-slate-400 mr-1 font-semibold">Hazır Kadro:</span>
+        <button onclick="applyPreset('symphony')" class="px-2 py-0.5 rounded bg-slate-800/90 hover:bg-amber-500/20 hover:text-amber-300 border border-slate-700/60 text-[11px] transition">🎻 Senfoni</button>
+        <button onclick="applyPreset('rock')" class="px-2 py-0.5 rounded bg-slate-800/90 hover:bg-amber-500/20 hover:text-amber-300 border border-slate-700/60 text-[11px] transition">🎸 Senfonik Rock</button>
+        <button onclick="applyPreset('turkish')" class="px-2 py-0.5 rounded bg-slate-800/90 hover:bg-amber-500/20 hover:text-amber-300 border border-slate-700/60 text-[11px] transition">🪕 Türk Müziği</button>
+        <button onclick="applyPreset('jazz')" class="px-2 py-0.5 rounded bg-slate-800/90 hover:bg-amber-500/20 hover:text-amber-300 border border-slate-700/60 text-[11px] transition">🎷 Caz & Big Band</button>
+        <button onclick="applyPreset('epic')" class="px-2 py-0.5 rounded bg-slate-800/90 hover:bg-amber-500/20 hover:text-amber-300 border border-slate-700/60 text-[11px] transition">🎬 Epik Film</button>
+        <button onclick="applyPreset('chamber')" class="px-2 py-0.5 rounded bg-slate-800/90 hover:bg-amber-500/20 hover:text-amber-300 border border-slate-700/60 text-[11px] transition">🎹 Oda Müziği</button>
+        <button onclick="applyPreset('acoustic')" class="px-2 py-0.5 rounded bg-slate-800/90 hover:bg-amber-500/20 hover:text-amber-300 border border-slate-700/60 text-[11px] transition">🎤 Akustik Pop</button>
+        <button onclick="applyPreset('clear')" class="px-2 py-0.5 rounded bg-rose-950/70 hover:bg-rose-900 text-rose-300 border border-rose-800/40 text-[11px] transition">Sıfırla</button>
+        <span class="rack-screw ml-1"></span>
+      </div>
+    </div>
+    <div id="instrumentGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-9 gap-1.5 max-h-32 overflow-y-auto pr-1"></div>
+  </section>
+
+  <!-- Ana Çalışma Alanı (3 Sütunlu DAW Mimarisi) -->
+  <main class="flex-1 flex overflow-hidden">
+
+    <!-- Sol Nota & Dizek Kontrol Rafı -->
+    <aside class="w-44 studio-rack border-r border-slate-800/90 p-2.5 flex flex-col gap-2.5 overflow-y-auto shrink-0">
+      <div class="flex items-center justify-between border-b border-slate-800/80 pb-1">
+        <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-400">🎛️ Dizek Araçları</span>
+        <span class="rack-screw"></span>
+      </div>
+
+      <div>
+        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Aktif Dizek Hattı</div>
+        <div id="staffSelector" class="grid grid-cols-2 gap-1"></div>
+      </div>
+
+      <div>
+        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Nota Süresi</div>
+        <div id="durationSelector" class="grid grid-cols-2 gap-1"></div>
+      </div>
+
+      <div>
+        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Değiştirici</div>
+        <div class="grid grid-cols-3 gap-1">
+          <button onclick="setAccidental('')" class="acc-btn px-2 py-1 rounded bg-amber-500 text-slate-950 font-bold text-xs" data-acc="">♮</button>
+          <button onclick="setAccidental('#')" class="acc-btn px-2 py-1 rounded bg-slate-800 text-slate-200 font-bold text-xs" data-acc="#">♯</button>
+          <button onclick="setAccidental('b')" class="acc-btn px-2 py-1 rounded bg-slate-800 text-slate-200 font-bold text-xs" data-acc="b">♭</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Hızlı İşlemler</div>
+        <button onclick="addRestNote()" class="w-full mb-1 px-2 py-1.5 rounded bg-slate-800/90 hover:bg-slate-700 border border-slate-700/60 text-xs text-left transition">𝄽 Es (Durak) Ekle</button>
+        <button onclick="deleteLastNote()" class="w-full mb-1 px-2 py-1.5 rounded bg-rose-950/60 hover:bg-rose-900/70 text-rose-300 border border-rose-800/40 text-xs text-left transition">⌫ Son Notayı Sil</button>
+        <button onclick="duplicateScorePhrase()" title="Mevcut tüm ölçüleri sonuna kopyalayarak şarkıyı uzatır" class="w-full px-2 py-1.5 rounded bg-amber-600/20 hover:bg-amber-600/35 text-amber-300 border border-amber-500/40 text-xs text-left font-semibold transition">🔁 Bölümü Çoğalt (Uzat)</button>
+        <div class="mt-2 pt-1.5 text-[10px] text-slate-400 leading-relaxed border-t border-slate-800/80">
+          <div class="font-semibold text-slate-300 mb-0.5">⌨️ Klavye Kısayolları:</div>
+          <div><span class="text-amber-400 font-mono">C D E F G A B</span>: Nota ekle</div>
+          <div><span class="text-amber-400 font-mono">R</span>: Es • <span class="text-amber-400 font-mono">Space</span>: Çal/Duraklat</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Orta Gerçek Nota Kağıdı & Canlı Stüdyo Spektrum Konsolu -->
+    <section class="flex-1 p-3 flex flex-col items-center overflow-hidden">
+      <div class="w-full max-w-5xl flex-1 flex flex-col bg-[#fdfbf7] text-slate-900 rounded-xl shadow-2xl border border-stone-300 overflow-hidden relative">
+        <!-- Sabit Üst Başlık ve Orta Oynatma / Zaman Çubuğu -->
+        <div class="px-5 pt-3 pb-2 border-b border-stone-300 bg-[#fdfbf7] shrink-0 relative">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-xs text-stone-600 space-y-0.5">
+              <div><span class="font-bold">USUL / ÖLÇÜ:</span> <span id="metaTime">4/4</span></div>
+              <div><span class="font-bold">TON / MAKAM:</span> <span id="metaKey">Re Majör</span></div>
+            </div>
+            <div class="text-center">
+              <input id="scoreTitleInput" class="text-lg font-serif font-bold text-center bg-transparent border-b border-transparent hover:border-stone-400 focus:border-amber-600 focus:outline-none text-stone-900" value="9. Senfoni — Neşeye Övgü" />
+              <div id="scoreComposer" class="text-xs text-stone-600">Ludwig van Beethoven</div>
+            </div>
+            <div class="text-right text-[11px] text-stone-600 leading-tight">
+              <div>Sol tık: Nota / Ritim ekle</div>
+              <div>Sağ tık: Seçili notayı sil</div>
+              <div id="sheetWatermarkOverlay" data-wm-owner="geceleriesen" class="geceleriesen-paper-watermark text-[9px] font-bold text-stone-700 mt-0.5">
+                © geceleriesen • OSS
+              </div>
+            </div>
+          </div>
+
+          <!-- Orta Sahne Oynatma, Zaman Çubuğu & Canlı Stüdyo Spektrum Analizörü -->
+          <div class="px-3 py-1.5 rounded-lg bg-slate-900 text-slate-100 border border-slate-700 flex items-center gap-2.5 shadow-inner">
+            <button id="midPlayPauseBtn" type="button" onclick="toggleMiddlePlayPause()" class="px-3 py-1 rounded-md bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition shrink-0">
+              ▶ Oynat
+            </button>
+            <button type="button" onclick="stopAudio()" class="px-2.5 py-1 rounded-md bg-slate-700 hover:bg-slate-600 text-white font-semibold text-xs transition shrink-0">
+              ■ Durdur
+            </button>
+
+            <span id="midTimeCurrent" class="text-[11px] font-mono font-bold text-amber-300 w-11 text-right shrink-0">00:00</span>
+            <input id="midSeekSlider" type="range" min="0" max="1000" value="0" oninput="onMidSeekInput(this.value)" onchange="onMidSeekCommit(this.value)" class="flex-1 h-2 accent-amber-500 cursor-pointer" title="Parçada istediğiniz yere atlamak için sürükleyin" />
+            <span id="midTimeTotal" class="text-[11px] font-mono font-semibold text-slate-400 w-11 shrink-0">00:00</span>
+
+            <span id="midBeatBadge" class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-emerald-300 font-semibold shrink-0">
+              Ölçü 1 • Vuruş 1
+            </span>
+
+            <!-- Canlı 24-Bant Stüdyo Frekans Spektrumu -->
+            <div class="hidden sm:flex items-center gap-1.5 pl-2 border-l border-slate-700/80 shrink-0" title="Canlı Stüdyo Frekans Analizörü">
+              <canvas id="studioSpectrumCanvas" width="96" height="22" class="rounded bg-slate-950 border border-slate-800"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kaydırılabilir 4 Satırlı Nota Kağıdı (Melodi, Armoni, Bas, Ritim) -->
+        <div class="flex-1 overflow-y-auto p-4 relative">
+          <div id="sheetContainer" class="relative overflow-x-auto pb-2">
+            <svg id="scoreSvg" class="w-full" height="440"></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sağ Sanatçı Vokal, Söz & Master Kontrol Stüdyosu -->
+    <aside class="w-80 studio-rack border-l border-slate-800/90 p-3 flex flex-col gap-2 overflow-y-auto shrink-0">
+      <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
+        <h2 class="text-xs font-extrabold uppercase tracking-wider text-amber-400">🎤 Sanatçı Vokal Kabini</h2>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-emerald-300 border border-emerald-500/25">STUDIO VOCAL</span>
+      </div>
+
+      <div id="vocalList" class="grid grid-cols-1 gap-1 max-h-52 overflow-y-auto pr-0.5"></div>
+
+      <div class="border-t border-slate-800/80 pt-2 flex-1 flex flex-col">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-xs font-bold text-slate-200">Şarkı Sözleri & Hece Editörü</span>
+          <button onclick="applyLyricsToNotes()" class="px-2.5 py-1 rounded bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-[11px] transition">
+            Notalara Eşle
+          </button>
+        </div>
+        <p class="text-[11px] text-slate-400 mb-1">Sözlerinizi tire (<code class="text-amber-300">-</code>) veya boşlukla ayırıp eşleyin; seçili sanatçı melodiyi söyler.</p>
+        <textarea id="lyricsInput" oninput="applyLyricsToNotes(true)" rows="4" class="w-full rounded-lg bg-slate-950/90 border border-slate-700/90 p-2 text-xs text-slate-100 focus:border-amber-500 focus:outline-none leading-relaxed shadow-inner"></textarea>
+
+        <!-- Stüdyo Master Çıkış & Stereo VU Metre Rafı -->
+        <div class="mt-2 p-2.5 rounded-lg studio-lcd text-[11px] space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-extrabold text-amber-400 tracking-wider text-[10px]">🎚️ MASTER MONİTÖR ÇIKIŞI</span>
+            <button id="btnMasterMute" type="button" onclick="toggleMasterMute()" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-300 border border-slate-700">
+              🔊 AÇIK
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-mono text-slate-400 w-7">VOL</span>
+            <input id="masterVolumeSlider" type="range" min="0" max="130" value="100" oninput="setMasterVolume(this.value)" class="flex-1 h-1.5 accent-emerald-400 cursor-pointer" />
+            <span id="masterVolumeLabel" class="text-[10px] font-mono font-bold text-emerald-300 w-9 text-right">100%</span>
+          </div>
+          <!-- L / R Stereo VU Metre Çubukları -->
+          <div class="space-y-1 pt-0.5">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[9px] font-mono font-bold text-slate-400 w-3">L</span>
+              <div class="flex-1 h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                <div id="vuBarL" class="h-full bg-gradient-to-r from-emerald-500 via-amber-400 to-rose-500 transition-all duration-75" style="width: 4%"></div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[9px] font-mono font-bold text-slate-400 w-3">R</span>
+              <div class="flex-1 h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                <div id="vuBarR" class="h-full bg-gradient-to-r from-emerald-500 via-amber-400 to-rose-500 transition-all duration-75" style="width: 4%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-2 p-2 rounded-lg bg-slate-950/90 border border-slate-800 text-[11px] text-slate-400">
+          <div class="flex items-center justify-between mb-0.5">
+            <span class="font-bold text-slate-300">Ses & Klip Motoru</span>
+            <span class="text-[9px] font-mono text-slate-500">48kHz / 24-bit</span>
+          </div>
+          <div id="renderStatusText" class="text-slate-300">Hazır. "Sentezle & Çal" düğmesine basın.</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <audio id="masterAudioPlayer" crossorigin="anonymous" class="hidden"></audio>
+
+<script>
+const INSTRUMENTS = [
+  { key: "violin", name: "Keman", cat: "Yaylı", icon: "🎻", defaultRole: "melody" },
+  { key: "viola", name: "Viyola", cat: "Yaylı", icon: "🎻", defaultRole: "harmony" },
+  { key: "cello", name: "Çello", cat: "Yaylı", icon: "🎻", defaultRole: "bass" },
+  { key: "contrabass", name: "Kontrbas", cat: "Yaylı", icon: "🎻", defaultRole: "bass" },
+  { key: "harp", name: "Arp", cat: "Yaylı", icon: "🪕", defaultRole: "harmony" },
+  { key: "flute", name: "Flüt", cat: "Üflemeli", icon: "🪈", defaultRole: "melody" },
+  { key: "oboe", name: "Obua", cat: "Üflemeli", icon: "🎷", defaultRole: "melody" },
+  { key: "clarinet", name: "Klarnet", cat: "Üflemeli", icon: "🎷", defaultRole: "melody" },
+  { key: "trumpet", name: "Trompet", cat: "Üflemeli", icon: "🎺", defaultRole: "melody" },
+  { key: "horn", name: "Korno", cat: "Üflemeli", icon: "📯", defaultRole: "harmony" },
+  { key: "saxophone", name: "Saksafon", cat: "Üflemeli", icon: "🎷", defaultRole: "melody" },
+  { key: "piano", name: "Piyano", cat: "Telli/Tuşlu", icon: "🎹", defaultRole: "harmony" },
+  { key: "electric_guitar", name: "Elektro Gitar", cat: "Telli/Tuşlu", icon: "🎸", defaultRole: "melody" },
+  { key: "acoustic_guitar", name: "Akustik Gitar", cat: "Telli/Tuşlu", icon: "🎸", defaultRole: "harmony" },
+  { key: "bass_guitar", name: "Bas Gitar", cat: "Telli/Tuşlu", icon: "🎸", defaultRole: "bass" },
+  { key: "oud_baglama", name: "Ud / Bağlama", cat: "Telli/Tuşlu", icon: "🪕", defaultRole: "melody" },
+  { key: "drums", name: "Bateri Seti", cat: "Vurmalı", icon: "🥁", defaultRole: "rhythm" },
+  { key: "timpani", name: "Timpani", cat: "Vurmalı", icon: "🥁", defaultRole: "rhythm" },
+];
+
+const VOCALS = [
+  { key: "diva_pop",       label: "👩 Kadın Pop Diva", tag: "Parlak & Güçlü Sahne" },
+  { key: "soprano_opera",  label: "👩 Kadın Dramatik Soprano", tag: "Klasik / Senfonik" },
+  { key: "turk_sanat_k",   label: "👩 Kadın Türk Sanat / Makam", tag: "Nefesli & Vibratolu" },
+  { key: "soul_mezzo",     label: "👩 Kadın Kadife Mezzo", tag: "Sıcak & Akustik" },
+  { key: "rock_tenor",     label: "👨 Erkek Rock & Senfonik Tenor", tag: "Yüksek & Güçlü" },
+  { key: "turk_sanat_e",   label: "👨 Erkek Türk Sanat / Anadolu", tag: "Duygulu & Otantik" },
+  { key: "velvet_bariton", label: "👨 Erkek Kadife Bariton", tag: "Sıcak & Romantik" },
+  { key: "deep_bass",      label: "👨 Erkek Derin Bas-Bariton", tag: "Tok & Epik" },
+];
+
+const ROLE_LABELS = { melody: "Melodi", harmony: "Armoni", bass: "Bas", rhythm: "Ritim" };
+const ROLE_ORDER = ["melody", "harmony", "bass", "rhythm"];
+
+let allScores = [];
+let currentScore = null;
+let selectedCategory = "Tümü";
+let activeStaff = "melody";
+let activeBeats = 1.0;
+let activeAccidental = "";
+let playheadTimer = null;
+let lastRenderedWavFilename = null;
+let isUserScrubbing = false;
+let currentPlayheadX = -1;
+
+// Web Audio API Stüdyo Spektrum Analizörü & Master Gain
+let studioAudioCtx = null;
+let studioAnalyser = null;
+let studioGainNode = null;
+let studioSourceConnected = false;
+let isMasterMuted = false;
+
+function ensureStudioVisualizer() {
+  const audio = document.getElementById("masterAudioPlayer");
+  if (!audio) return;
+  try {
+    if (!studioAudioCtx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      studioAudioCtx = new AudioCtx();
+      studioAnalyser = studioAudioCtx.createAnalyser();
+      studioAnalyser.fftSize = 64;
+      studioAnalyser.smoothingTimeConstant = 0.82;
+      studioGainNode = studioAudioCtx.createGain();
+      const volVal = Number(document.getElementById("masterVolumeSlider")?.value || 100) / 100;
+      studioGainNode.gain.value = isMasterMuted ? 0 : volVal;
+    }
+    if (studioAudioCtx.state === "suspended") {
+      studioAudioCtx.resume().catch(() => {});
+    }
+    if (!studioSourceConnected) {
+      const srcNode = studioAudioCtx.createMediaElementSource(audio);
+      srcNode.connect(studioAnalyser);
+      studioAnalyser.connect(studioGainNode);
+      studioGainNode.connect(studioAudioCtx.destination);
+      studioSourceConnected = true;
+    }
+  } catch (_) {
+    // Web Audio API kısıtlanırsa doğal HTML5 audio çalmaya devam eder
+  }
+}
+
+function setMasterVolume(val) {
+  const num = Number(val);
+  const lbl = document.getElementById("masterVolumeLabel");
+  if (lbl) lbl.textContent = `${num}%`;
+  const audio = document.getElementById("masterAudioPlayer");
+  if (studioGainNode) {
+    studioGainNode.gain.value = isMasterMuted ? 0 : (num / 100);
+  } else if (audio) {
+    audio.volume = isMasterMuted ? 0 : Math.min(1, num / 100);
+  }
+}
+
+function toggleMasterMute() {
+  isMasterMuted = !isMasterMuted;
+  const btn = document.getElementById("btnMasterMute");
+  if (btn) {
+    btn.textContent = isMasterMuted ? "🔇 SESSİZ" : "🔊 AÇIK";
+    btn.className = isMasterMuted
+      ? "px-1.5 py-0.5 rounded bg-rose-900/70 text-[10px] font-bold text-rose-200 border border-rose-700"
+      : "px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-300 border border-slate-700";
+  }
+  setMasterVolume(document.getElementById("masterVolumeSlider")?.value || 100);
+}
+
+function startStudioSpectrumLoop() {
+  const canvas = document.getElementById("studioSpectrumCanvas");
+  const vuL = document.getElementById("vuBarL");
+  const vuR = document.getElementById("vuBarR");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const bins = new Uint8Array(32);
+  let idlePhase = 0;
+
+  function drawFrame() {
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const audio = document.getElementById("masterAudioPlayer");
+    const isPlaying = audio && !audio.paused && !audio.ended;
+
+    if (isPlaying && studioAnalyser && studioSourceConnected) {
+      studioAnalyser.getByteFrequencyData(bins);
+      const barCount = 16;
+      const barW = (w / barCount) - 1.5;
+      let sumEnergy = 0;
+      for (let i = 0; i < barCount; i++) {
+        const v = bins[i] / 255.0;
+        sumEnergy += v;
+        const bh = Math.max(2, v * (h - 2));
+        ctx.fillStyle = v > 0.78 ? "#f43f5e" : (v > 0.45 ? "#f59e0b" : "#10b981");
+        ctx.fillRect(i * (barW + 1.5) + 1, h - bh, barW, bh);
+      }
+      const avgPct = Math.min(100, Math.round((sumEnergy / barCount) * 145));
+      if (vuL) vuL.style.width = `${avgPct}%`;
+      if (vuR) vuR.style.width = `${Math.max(4, Math.min(100, avgPct - 4 + Math.round(Math.sin(idlePhase * 3) * 5)))}%`;
+    } else {
+      // Stüdyo bekleme dalgası
+      idlePhase += 0.06;
+      const barCount = 16;
+      const barW = (w / barCount) - 1.5;
+      for (let i = 0; i < barCount; i++) {
+        const bh = 2 + Math.abs(Math.sin(idlePhase + i * 0.42)) * 4;
+        ctx.fillStyle = "rgba(245, 158, 11, 0.35)";
+        ctx.fillRect(i * (barW + 1.5) + 1, h - bh, barW, bh);
+      }
+      if (vuL) vuL.style.width = "4%";
+      if (vuR) vuR.style.width = "4%";
+    }
+    requestAnimationFrame(drawFrame);
+  }
+  requestAnimationFrame(drawFrame);
+}
+
+// ==============================================================================
+// Kurcalamaya Dayanıklı Şeffaf "geceleriesen" Watermark Koruma Kalkanı
+// ==============================================================================
+(function initWatermarkShield() {
+  const OWNER = "geceleriesen";
+
+  function enforceWatermarks() {
+    // 1. Sol üst logo yanındaki marka imza rozeti
+    let brandEl = document.getElementById("geceleriesenBrandMark");
+    const headerLeft = document.querySelector("#studioTopHeader .leading-tight");
+    if (!brandEl && headerLeft) {
+      brandEl = document.createElement("div");
+      brandEl.id = "geceleriesenBrandMark";
+      brandEl.setAttribute("data-wm-owner", OWNER);
+      brandEl.className = "geceleriesen-brand-seal mt-0.5 px-1.5 py-0.2 rounded inline-flex items-center gap-1 text-[10px] font-mono text-amber-300/90";
+      brandEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 studio-led-live"></span><span class="font-bold tracking-wider">${OWNER}</span><span class="text-[8.5px] text-slate-400">• OSS</span>`;
+      headerLeft.appendChild(brandEl);
+    } else if (brandEl) {
+      brandEl.style.display = "inline-flex";
+      brandEl.style.visibility = "visible";
+      if (!brandEl.textContent.includes(OWNER)) {
+        brandEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 studio-led-live"></span><span class="font-bold tracking-wider">${OWNER}</span><span class="text-[8.5px] text-slate-400">• OSS</span>`;
+      }
+    }
+
+    // 2. Nota kağıdı üzerindeki şeffaf ve tıklama geçiren filigran
+    let paperWm = document.getElementById("sheetWatermarkOverlay");
+    const paperHeaderRight = document.querySelector("#scoreTitleInput")?.parentElement?.nextElementSibling;
+    if (!paperWm && paperHeaderRight) {
+      paperWm = document.createElement("div");
+      paperWm.id = "sheetWatermarkOverlay";
+      paperWm.setAttribute("data-wm-owner", OWNER);
+      paperWm.className = "geceleriesen-paper-watermark text-[9px] font-bold text-stone-700 mt-0.5";
+      paperWm.textContent = `© ${OWNER} • OSS`;
+      paperHeaderRight.appendChild(paperWm);
+    } else if (paperWm) {
+      paperWm.style.display = "block";
+      paperWm.style.visibility = "visible";
+      paperWm.style.pointerEvents = "none";
+      if (!paperWm.textContent.includes(OWNER)) {
+        paperWm.textContent = `© ${OWNER} • OSS`;
+      }
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    enforceWatermarks();
+    const obs = new MutationObserver(() => enforceWatermarks());
+    obs.observe(document.body, { childList: true, subtree: true, attributes: true, characterData: true });
+    setInterval(enforceWatermarks, 2500);
+  });
+})();
+
+async function init() {
+  startStudioSpectrumLoop();
+  const stRes = await fetch("/api/status");
+  const st = await stRes.json();
+  const badge = document.getElementById("engineBadge");
+  const ai = st.studio_ai || {};
+  if (ai.acestep_installed) {
+    const hw = ai.cuda_available ? `GPU: ${ai.gpu_name}` : "CPU Stüdyo Modu";
+    badge.textContent = `🌟 Stüdyo AI (ACE-Step 1.5 • ${hw})`;
+    badge.className = "text-[11px] px-2.5 py-1 rounded-lg bg-emerald-950/90 text-emerald-300 border border-emerald-500/40 font-semibold";
+  } else {
+    badge.textContent = "⚠️ Stüdyo AI Kurulumu Bekleniyor (install_studio_ai.bat)";
+    badge.className = "text-[11px] px-2.5 py-1 rounded-lg bg-amber-950/90 text-amber-300 border border-amber-500/40 font-semibold";
+  }
+
+  await loadScores();
+  renderCategories();
+  renderToolbar();
+}
+
+async function loadScores() {
+  const res = await fetch("/api/scores");
+  const data = await res.json();
+  allScores = data.scores || [];
+  if (allScores.length > 0 && !currentScore) {
+    selectScore(allScores[0].id);
+  }
+  renderScoreTabs();
+}
+
+function renderScoreTabs() {
+  const wrap = document.getElementById("scoreTabs");
+  wrap.innerHTML = "";
+  allScores.forEach(sc => {
+    const active = currentScore && sc.id === currentScore.id;
+    const chip = document.createElement("div");
+    chip.className = `flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer border transition ${
+      active ? "bg-amber-500 text-slate-950 border-amber-400 shadow-sm shadow-amber-500/20" : "bg-slate-900/90 text-slate-200 border-slate-700/80 hover:bg-slate-800"
+    }`;
+    const titleSpan = document.createElement("span");
+    titleSpan.textContent = sc.title;
+    titleSpan.onclick = () => selectScore(sc.id);
+    chip.appendChild(titleSpan);
+
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "×";
+    delBtn.title = "Bu notayı sil";
+    delBtn.className = `ml-1 px-1 rounded font-bold ${active ? "hover:bg-amber-600/40 text-slate-900" : "hover:bg-rose-600 text-slate-400 hover:text-white"}`;
+    delBtn.onclick = (e) => { e.stopPropagation(); deleteScore(sc.id); };
+    chip.appendChild(delBtn);
+
+    wrap.appendChild(chip);
+  });
+}
+
+const LEGACY_VOCAL_KEYS = { female_soprano: "soprano_opera", male_tenor: "rock_tenor" };
+
+function normalizeVocals(score) {
+  const out = {};
+  Object.entries(score.vocals || {}).forEach(([k, v]) => {
+    const key = LEGACY_VOCAL_KEYS[k] || k;
+    out[key] = (out[key] || 0) + (v || 0);
+  });
+  score.vocals = out;
+}
+
+function selectScore(id) {
+  if (currentScore && currentScore.id !== id) {
+    const cur = allScores.findIndex(s => s.id === currentScore.id);
+    if (cur >= 0) {
+      currentScore.title = document.getElementById("scoreTitleInput").value.trim() || currentScore.title;
+      allScores[cur] = JSON.parse(JSON.stringify(currentScore));
+    }
+  }
+  const found = allScores.find(s => s.id === id);
+  if (!found) return;
+  currentScore = JSON.parse(JSON.stringify(found));
+  normalizeVocals(currentScore);
+  document.getElementById("scoreTitleInput").value = currentScore.title;
+  document.getElementById("scoreComposer").textContent = currentScore.composer;
+  document.getElementById("metaTime").textContent = currentScore.time_signature || "4/4";
+  document.getElementById("metaKey").textContent = currentScore.key_signature || "Do Majör";
+  setBpm(currentScore.bpm || 116, false);
+
+  const assembledWords = [];
+  let wordBuf = "";
+  (currentScore.staves.melody || []).forEach(n => {
+    const lyr = (n.lyric || "").trim();
+    if (!lyr || lyr === "-") return;
+    if (lyr.endswith("-")) {
+      wordBuf += lyr.slice(0, -1);
+    } else {
+      assembledWords.push(wordBuf + lyr);
+      wordBuf = "";
+    }
+  });
+  if (wordBuf) assembledWords.push(wordBuf);
+  document.getElementById("lyricsInput").value = assembledWords.join(" ");
+
+  renderScoreTabs();
+  renderInstruments();
+  renderVocals();
+  drawSheet();
+  const scInit = document.getElementById("sheetContainer");
+  if (scInit) scInit.scrollLeft = 0;
+}
+
+async function deleteScore(id) {
+  await fetch(`/api/scores/${id}`, { method: "DELETE" });
+  allScores = allScores.filter(s => s.id !== id);
+  if (currentScore && currentScore.id === id) {
+    currentScore = null;
+    if (allScores.length > 0) selectScore(allScores[0].id);
+    else createNewBlankScore();
+  }
+  renderScoreTabs();
+}
+
+function createNewBlankScore() {
+  const id = "custom_" + Date.now();
+  currentScore = {
+    id,
+    title: "Yeni Beste",
+    composer: "Kendi Eserim",
+    bpm: 110,
+    time_signature: "4/4",
+    key_signature: "Do Majör",
+    instruments: { piano: { count: 1, role: "melody" } },
+    vocals: { diva_pop: 0, rock_tenor: 0 },
+    staves: { melody: [], harmony: [], bass: [], rhythm: [] }
+  };
+  allScores.push(currentScore);
+  document.getElementById("scoreTitleInput").value = currentScore.title;
+  document.getElementById("scoreComposer").textContent = currentScore.composer;
+  document.getElementById("lyricsInput").value = "";
+  renderScoreTabs();
+  renderInstruments();
+  renderVocals();
+  drawSheet();
+}
+
+async function saveCurrentScore() {
+  if (!currentScore) return;
+  currentScore.title = document.getElementById("scoreTitleInput").value.trim() || "İsimsiz Eser";
+  await fetch("/api/scores", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(currentScore)
+  });
+  const idx = allScores.findIndex(s => s.id === currentScore.id);
+  if (idx >= 0) allScores[idx] = JSON.parse(JSON.stringify(currentScore));
+  renderScoreTabs();
+  document.getElementById("renderStatusText").textContent = "Partisyon diske kaydedildi.";
+}
+
+function renderCategories() {
+  const cats = ["Tümü", "Yaylı", "Üflemeli", "Telli/Tuşlu", "Vurmalı"];
+  const wrap = document.getElementById("categoryTabs");
+  wrap.innerHTML = cats.map(c => `
+    <button onclick="selectedCategory='${c}'; renderCategories(); renderInstruments();"
+      class="px-2 py-0.5 rounded text-[11px] font-semibold transition ${selectedCategory === c ? "bg-amber-500 text-slate-950" : "bg-slate-800/90 text-slate-300 hover:bg-slate-700"}">
+      ${c}
+    </button>
+  `).join("");
+}
+
+function renderInstruments() {
+  if (!currentScore) return;
+  const grid = document.getElementById("instrumentGrid");
+  const filtered = selectedCategory === "Tümü" ? INSTRUMENTS : INSTRUMENTS.filter(i => i.cat === selectedCategory);
+
+  let totalPlayers = 0;
+  Object.values(currentScore.instruments || {}).forEach(v => totalPlayers += (v.count || 0));
+  document.getElementById("activeCountBadge").textContent = `${totalPlayers} Aktif Çalgıcı`;
+
+  grid.innerHTML = filtered.map(inst => {
+    const state = (currentScore.instruments && currentScore.instruments[inst.key]) || { count: 0, role: inst.defaultRole };
+    const active = state.count > 0;
+    return `
+      <div class="p-1.5 rounded-lg border transition ${active ? "bg-slate-800/95 border-amber-500/65 shadow-sm shadow-amber-500/10" : "bg-slate-950/75 border-slate-800/90"} flex flex-col justify-between gap-1">
+        <div class="flex items-center justify-between gap-1">
+          <span class="text-[11px] font-semibold truncate flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full ${active ? "bg-amber-400 shadow-sm shadow-amber-400" : "bg-slate-700"}"></span>
+            ${inst.icon} ${inst.name}
+          </span>
+          <button onclick="cycleRole('${inst.key}', '${inst.defaultRole}')" title="Dizek hattını değiştir"
+            class="text-[9px] px-1 py-0.5 rounded bg-slate-900 border border-slate-700 text-amber-300 hover:border-amber-400">
+            ${ROLE_LABELS[state.role || inst.defaultRole]}
+          </button>
+        </div>
+        <div class="flex items-center justify-between bg-slate-900/95 rounded px-1 py-0.5 border border-slate-800/70">
+          <button onclick="changeInstCount('${inst.key}', -1, '${inst.defaultRole}')" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold">−</button>
+          <span class="text-xs font-mono font-bold ${active ? "text-amber-400" : "text-slate-500"}">${state.count}x</span>
+          <button onclick="changeInstCount('${inst.key}', 1, '${inst.defaultRole}')" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold">+</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function changeInstCount(key, delta, defaultRole) {
+  if (!currentScore) return;
+  if (!currentScore.instruments[key]) currentScore.instruments[key] = { count: 0, role: defaultRole };
+  currentScore.instruments[key].count = Math.max(0, Math.min(24, (currentScore.instruments[key].count || 0) + delta));
+  renderInstruments();
+}
+
+function cycleRole(key, defaultRole) {
+  if (!currentScore) return;
+  if (!currentScore.instruments[key]) currentScore.instruments[key] = { count: 0, role: defaultRole };
+  const cur = currentScore.instruments[key].role || defaultRole;
+  const next = ROLE_ORDER[(ROLE_ORDER.indexOf(cur) + 1) % ROLE_ORDER.length];
+  currentScore.instruments[key].role = next;
+  renderInstruments();
+}
+
+function toggleInstDrawer() {
+  const grid = document.getElementById("instrumentGrid");
+  const arrow = document.getElementById("drawerArrow");
+  grid.classList.toggle("hidden");
+  arrow.textContent = grid.classList.contains("hidden") ? "▶" : "▼";
+}
+
+function applyPreset(name) {
+  if (!currentScore) return;
+  const presets = {
+    symphony: { violin: {count:6,role:"melody"}, viola: {count:3,role:"harmony"}, cello: {count:3,role:"bass"}, contrabass: {count:2,role:"bass"}, flute: {count:2,role:"melody"}, oboe: {count:1,role:"harmony"}, horn: {count:2,role:"harmony"}, timpani: {count:1,role:"rhythm"} },
+    rock:     { electric_guitar: {count:2,role:"melody"}, acoustic_guitar: {count:1,role:"harmony"}, bass_guitar: {count:1,role:"bass"}, drums: {count:1,role:"rhythm"}, piano: {count:1,role:"harmony"}, violin: {count:2,role:"harmony"} },
+    turkish:  { oud_baglama: {count:2,role:"melody"}, violin: {count:3,role:"harmony"}, cello: {count:2,role:"bass"}, clarinet: {count:1,role:"melody"}, drums: {count:1,role:"rhythm"} },
+    jazz:     { saxophone: {count:2,role:"melody"}, trumpet: {count:2,role:"melody"}, piano: {count:1,role:"harmony"}, contrabass: {count:1,role:"bass"}, drums: {count:1,role:"rhythm"} },
+    epic:     { horn: {count:4,role:"harmony"}, trumpet: {count:2,role:"melody"}, violin: {count:6,role:"melody"}, cello: {count:4,role:"bass"}, contrabass: {count:2,role:"bass"}, timpani: {count:2,role:"rhythm"}, harp: {count:1,role:"harmony"} },
+    chamber:  { piano: {count:1,role:"harmony"}, violin: {count:2,role:"melody"}, viola: {count:1,role:"harmony"}, cello: {count:1,role:"bass"} },
+    acoustic: { acoustic_guitar: {count:2,role:"harmony"}, piano: {count:1,role:"melody"}, bass_guitar: {count:1,role:"bass"}, flute: {count:1,role:"melody"}, drums: {count:1,role:"rhythm"} },
+    clear:    {}
+  };
+  currentScore.instruments = JSON.parse(JSON.stringify(presets[name] || {}));
+  renderInstruments();
+}
+
+function renderVocals() {
+  if (!currentScore) return;
+  const wrap = document.getElementById("vocalList");
+  wrap.innerHTML = VOCALS.map(v => {
+    const cnt = (currentScore.vocals && currentScore.vocals[v.key]) || 0;
+    const active = cnt > 0;
+    return `
+      <div class="px-2 py-1.5 rounded-lg border transition ${active ? "bg-slate-800/95 border-amber-500/65 shadow-sm shadow-amber-500/10" : "bg-slate-950/75 border-slate-800/90"} flex items-center justify-between gap-2">
+        <div class="min-w-0">
+          <div class="text-xs font-semibold truncate flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full shrink-0 ${active ? "bg-emerald-400" : "bg-slate-700"}"></span>
+            ${v.label}
+          </div>
+          <div class="text-[10px] text-slate-400 truncate pl-3">${v.tag}</div>
+        </div>
+        <div class="flex items-center gap-1 shrink-0">
+          <button onclick="changeVocal('${v.key}', -1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold">−</button>
+          <span class="text-xs font-mono font-bold w-6 text-center ${active ? "text-amber-400" : "text-slate-500"}">${cnt}x</span>
+          <button onclick="changeVocal('${v.key}', 1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold">+</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function changeVocal(key, delta) {
+  if (!currentScore) return;
+  if (!currentScore.vocals) currentScore.vocals = {};
+  currentScore.vocals[key] = Math.max(0, Math.min(8, (currentScore.vocals[key] || 0) + delta));
+  renderVocals();
+}
+
+function setBpm(val, syncScore = true) {
+  const bpm = Math.max(50, Math.min(200, parseInt(val, 10) || 116));
+  document.getElementById("bpmSlider").value = bpm;
+  document.getElementById("bpmLabel").textContent = `${bpm} BPM`;
+  if (syncScore && currentScore) currentScore.bpm = bpm;
+}
+function changeBpm(delta) { setBpm((parseInt(document.getElementById("bpmSlider").value, 10) || 116) + delta); }
+
+const TR_VOWELS = new Set(["a","e","ı","i","o","ö","u","ü","A","E","I","İ","O","Ö","U","Ü"]);
+const EN_VOWELS = new Set(["a","e","i","o","u","y","A","E","I","O","U","Y"]);
+
+function syllabifyTurkishWord(word) {
+  const clean = word.trim();
+  if (!clean) return [];
+  const chars = Array.from(clean);
+  const vowelIdx = [];
+  chars.forEach((ch, idx) => { if (TR_VOWELS.has(ch)) vowelIdx.push(idx); });
+  if (vowelIdx.length <= 1) return [clean];
+
+  const sylls = [];
+  let start = 0;
+  for (let i = 0; i < vowelIdx.length - 1; i++) {
+    const v1 = vowelIdx[i];
+    const v2 = vowelIdx[i + 1];
+    const between = v2 - v1 - 1;
+    let cut = v1 + 1;
+    if (between === 0) cut = v1 + 1;
+    else if (between === 1) cut = v1 + 1;
+    else cut = v2 - 1;
+    sylls.push(chars.slice(start, cut).join("") + "-");
+    start = cut;
+  }
+  sylls.push(chars.slice(start).join(""));
+  return sylls;
+}
+
+function syllabifyLatinWord(word) {
+  const clean = word.trim();
+  if (!clean) return [];
+  if (/[ğüşöçıİĞÜŞÖÇ]/.test(clean)) return syllabifyTurkishWord(clean);
+  const parts = clean.match(/[^aeiouyAEIOUY]*[aeiouyAEIOUY]+(?:[^aeiouyAEIOUY](?=[^aeiouyAEIOUY]))?/g);
+  if (!parts || parts.length <= 1) return [clean];
+  return parts.map((p, idx) => (idx < parts.length - 1 ? p + "-" : p));
+}
+
+function tokenizeLyricsUniversal(rawText) {
+  const tokens = [];
+  const words = rawText.replace(/\n+/g, " ").split(/\s+/).filter(Boolean);
+  for (const w of words) {
+    if (w.includes("-")) {
+      const sub = w.split("-").filter(Boolean);
+      sub.forEach((s, idx) => tokens.push(idx < sub.length - 1 ? s + "-" : s));
+      continue;
+    }
+    const isCJK = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af]/.test(w);
+    if (isCJK) {
+      Array.from(w).forEach(ch => tokens.push(ch));
+    } else {
+      tokens.push(...syllabifyLatinWord(w));
+    }
+  }
+  return tokens;
+}
+
+function applyLyricsToNotes(silent = false) {
+  if (!currentScore) return;
+  const raw = document.getElementById("lyricsInput").value.trim();
+  const tokens = tokenizeLyricsUniversal(raw);
+  const melody = currentScore.staves.melody || [];
+  let tIdx = 0;
+
+  for (let i = 0; i < melody.length; i++) {
+    const note = melody[i];
+    if (!note.pitch || note.pitch === "REST") continue;
+
+    const nextNote = melody[i + 1];
+    const tok = tokens[tIdx] || "";
+    if (nextNote && nextNote.pitch === "REST" && tok.endsWith("-")) {
+      note.lyric = "";
+      continue;
+    }
+
+    note.lyric = tok;
+    if (tok) tIdx++;
+  }
+
+  drawSheet();
+  if (!silent) {
+    document.getElementById("renderStatusText").textContent = `${tIdx} hece (${tokens.length} toplam) notalara eşlendi.`;
+  }
+}
+
+function renderToolbar() {
+  const staffWrap = document.getElementById("staffSelector");
+  staffWrap.innerHTML = ROLE_ORDER.map(r => `
+    <button onclick="activeStaff='${r}'; renderToolbar();"
+      class="px-2 py-1 rounded text-[11px] font-semibold transition ${activeStaff === r ? "bg-amber-500 text-slate-950 font-bold" : "bg-slate-800/90 text-slate-300 hover:bg-slate-700"}">
+      ${ROLE_LABELS[r]}
+    </button>
+  `).join("");
+
+  const durs = [
+    { label: "1 (Birlik)", val: 4.0 },
+    { label: "1/2 (İkilik)", val: 2.0 },
+    { label: "1/4 (Dörtlük)", val: 1.0 },
+    { label: "1/8 (Sekizlik)", val: 0.5 },
+  ];
+  document.getElementById("durationSelector").innerHTML = durs.map(d => `
+    <button onclick="activeBeats=${d.val}; renderToolbar();"
+      class="px-2 py-1 rounded text-[11px] font-semibold transition ${activeBeats === d.val ? "bg-amber-500 text-slate-950 font-bold" : "bg-slate-800/90 text-slate-300 hover:bg-slate-700"}">
+      ${d.label}
+    </button>
+  `).join("");
+}
+
+function setAccidental(acc) {
+  activeAccidental = acc;
+  document.querySelectorAll(".acc-btn").forEach(btn => {
+    const isSel = btn.dataset.acc === acc;
+    btn.className = `acc-btn px-2 py-1 rounded font-bold text-xs transition ${isSel ? "bg-amber-500 text-slate-950" : "bg-slate-800/90 text-slate-200 hover:bg-slate-700"}`;
+  });
+}
+
+const LETTERS = ["C", "D", "E", "F", "G", "A", "B"];
+function diatonic(pitch) {
+  const m = /^([A-G])([#b]?)(-?\d+)$/.exec(pitch || "");
+  if (!m) return null;
+  return parseInt(m[3], 10) * 7 + LETTERS.indexOf(m[1]);
+}
+function pitchFromDiatonic(dn) {
+  const oct = Math.floor(dn / 7);
+  const idx = ((dn % 7) + 7) % 7;
+  return LETTERS[idx] + oct;
+}
+
+const CLEF_TOP_DN = { treble: diatonic("F5"), bass: diatonic("A3") };
+const clefOf = (role) => (role === "bass" || role === "rhythm" ? "bass" : "treble");
+
+const RHYTHM_PAD_LABELS = {
+  "G2": "Kick",
+  "A2": "Kick",
+  "B2": "Tom",
+  "C3": "Snare",
+  "D3": "Tom",
+  "E3": "Hi-Hat",
+  "F3": "Clap",
+  "G3": "Zil",
+  "A3": "Crash"
+};
+
+function pitchY(p, role) {
+  const dn = diatonic(p);
+  if (dn === null) return 28;
+  return 10 + (CLEF_TOP_DN[clefOf(role)] - dn) * 4.5;
+}
+function yToPitch(localY, role) {
+  const step = Math.max(-1, Math.min(10, Math.round((localY - 10) / 4.5)));
+  return pitchFromDiatonic(CLEF_TOP_DN[clefOf(role)] - step);
+}
+const escXml = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function noteAdvance(ev) { return Math.max(30, (ev.beats || 1.0) * 32); }
+
+function getScoreTotalSeconds() {
+  if (!currentScore) return 0;
+  const melody = currentScore.staves.melody || [];
+  const totalBeats = melody.reduce((acc, ev) => acc + (ev.beats || 1.0), 0);
+  const beatSec = 60 / Math.max(40, currentScore.bpm || 116);
+  return totalBeats * beatSec;
+}
+
+function beatPosToX(beatPos) {
+  const melody = currentScore?.staves?.melody || [];
+  let x = 125, b0 = 0;
+  for (const ev of melody) {
+    const d = ev.beats || 1.0, adv = noteAdvance(ev);
+    if (beatPos < b0 + d) {
+      x += ((beatPos - b0) / d) * adv;
+      return x;
+    }
+    b0 += d;
+    x += adv;
+  }
+  return x;
+}
+
+function xToBeatPos(targetX) {
+  const melody = currentScore?.staves?.melody || [];
+  let x = 125, b0 = 0;
+  for (const ev of melody) {
+    const d = ev.beats || 1.0, adv = noteAdvance(ev);
+    if (targetX <= x + adv) {
+      const ratio = Math.max(0, Math.min(1, (targetX - x) / adv));
+      return b0 + ratio * d;
+    }
+    b0 += d;
+    x += adv;
+  }
+  return b0;
+}
+
+function formatSecMMSS(sec) {
+  const s = Math.max(0, Math.floor(sec || 0));
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+
+function updateMiddleTransportUI() {
+  const audio = document.getElementById("masterAudioPlayer");
+  const playBtn = document.getElementById("midPlayPauseBtn");
+  const curEl = document.getElementById("midTimeCurrent");
+  const totEl = document.getElementById("midTimeTotal");
+  const slider = document.getElementById("midSeekSlider");
+  const beatBadge = document.getElementById("midBeatBadge");
+  if (!audio || !playBtn) return;
+
+  const scoreSec = getScoreTotalSeconds();
+  const totalSec = (audio.duration && isFinite(audio.duration) && audio.duration > 0) ? audio.duration : scoreSec;
+  const curSec = audio.currentTime || 0;
+
+  if (curEl) curEl.textContent = formatSecMMSS(curSec);
+  if (totEl) totEl.textContent = formatSecMMSS(totalSec);
+
+  if (slider && !isUserScrubbing) {
+    slider.value = totalSec > 0 ? Math.round((curSec / totalSec) * 1000) : 0;
+  }
+
+  const bpm = Math.max(40, currentScore?.bpm || 116);
+  const beatPos = curSec / (60 / bpm);
+  const tsNum = parseInt(String(currentScore?.time_signature || "4/4").split("/")[0], 10) || 4;
+  const measureNum = Math.floor(beatPos / tsNum) + 1;
+  const beatInMeasure = Math.floor(beatPos % tsNum) + 1;
+  if (beatBadge) beatBadge.textContent = `Ölçü ${measureNum} • Vuruş ${beatInMeasure}`;
+
+  if (!audio.paused && !audio.ended && audio.src) {
+    playBtn.textContent = "⏸ Duraklat";
+  } else if (audio.paused && audio.currentTime > 0 && audio.src) {
+    playBtn.textContent = "▶ Devam Et";
+  } else {
+    playBtn.textContent = "▶ Oynat";
+  }
+}
+
+function updatePlayheadVisual(x) {
+  currentPlayheadX = x;
+  const line = document.getElementById("playheadLine");
+  const arrow = document.getElementById("playheadArrow");
+  if (!line || !arrow) {
+    drawSheet();
+    return;
+  }
+  if (x > 0) {
+    line.setAttribute("x1", x);
+    line.setAttribute("x2", x);
+    line.setAttribute("visibility", "visible");
+    arrow.setAttribute("points", `${x - 6},4 ${x + 6},4 ${x},14`);
+    arrow.setAttribute("visibility", "visible");
+  } else {
+    line.setAttribute("visibility", "hidden");
+    arrow.setAttribute("visibility", "hidden");
+  }
+}
+
+function drawSheet() {
+  if (!currentScore) return;
+  const svg = document.getElementById("scoreSvg");
+  const stavesOrder = ["melody", "harmony", "bass", "rhythm"];
+  const rowHeight = 86;
+  const maxNotes = Math.max(
+    (currentScore.staves.melody || []).length,
+    (currentScore.staves.harmony || []).length,
+    (currentScore.staves.bass || []).length,
+    (currentScore.staves.rhythm || []).length
+  );
+  const width = Math.max(860, 150 + maxNotes * 36);
+  svg.setAttribute("width", width);
+  svg.style.width = width + "px";
+  svg.setAttribute("height", rowHeight * 4 + 22);
+
+  let html = "";
+  html += `<defs>
+    <pattern id="geceleriesenWmPattern" width="320" height="140" patternUnits="userSpaceOnUse" patternTransform="rotate(-14)">
+      <text x="16" y="70" font-size="11" font-family="monospace" font-weight="bold" fill="#1e293b" opacity="0.045">geceleriesen • NotaStüdyo Open Source</text>
+    </pattern>
+  </defs>`;
+  html += `<rect x="0" y="0" width="${width}" height="${rowHeight * 4 + 22}" fill="url(#geceleriesenWmPattern)" pointer-events="none" />`;
+
+  html += `<rect x="75" y="2" width="${width - 95}" height="15" rx="4" fill="#e7e5e4" />`;
+  html += `<text x="82" y="12.5" font-size="9" font-weight="bold" fill="#57534e">ZAMAN CETVELİ (Parçada atlamak için tıklayın)</text>`;
+
+  stavesOrder.forEach((role, rIdx) => {
+    const topY = 22 + rIdx * rowHeight;
+    const isActiveRow = (activeStaff === role);
+
+    if (isActiveRow) {
+      html += `<rect x="4" y="${topY - 3}" width="${width - 12}" height="${rowHeight - 6}" rx="7" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.3" />`;
+    } else {
+      html += `<rect x="4" y="${topY - 3}" width="${width - 12}" height="${rowHeight - 6}" rx="7" fill="#fafaf9" stroke="#e7e5e4" stroke-width="0.9" />`;
+    }
+
+    html += `<text x="12" y="${topY + 23}" font-size="11" font-weight="bold" fill="${isActiveRow ? "#b45309" : "#44403c"}">${ROLE_LABELS[role]}</text>`;
+    if (role === "rhythm") {
+      html += `<text x="12" y="${topY + 37}" font-size="8.5" fill="#78716c">Davul / Perküsyon</text>`;
+    }
+
+    for (let l = 0; l < 5; l++) {
+      const ly = topY + 10 + l * 9;
+      html += `<line x1="75" y1="${ly}" x2="${width - 20}" y2="${ly}" stroke="#292524" stroke-width="1.05" />`;
+    }
+
+    if (role === "rhythm") {
+      html += `<rect x="84" y="${topY + 15}" width="4" height="25" fill="#1c1917" />`;
+      html += `<rect x="92" y="${topY + 15}" width="4" height="25" fill="#1c1917" />`;
+    } else {
+      html += `<text x="80" y="${topY + 41}" font-size="34" fill="#1c1917">${role === "bass" ? "𝄢" : "𝄞"}</text>`;
+    }
+
+    const notes = currentScore.staves[role] || [];
+    let nx = 125;
+    notes.forEach((ev, nIdx) => {
+      const pitches = ev.pitches || (ev.pitch ? [ev.pitch] : []);
+      const color = "#111827";
+
+      pitches.forEach(p => {
+        if (p === "REST") {
+          html += `<text x="${nx - 4}" y="${topY + 34}" font-size="16" fill="${color}" data-role="${role}" data-idx="${nIdx}">𝄽</text>`;
+        } else {
+          const cy = topY + pitchY(p, role);
+          for (let ly = 55; ly <= pitchY(p, role) + 2; ly += 9) {
+            html += `<line x1="${nx - 10}" y1="${topY + ly}" x2="${nx + 10}" y2="${topY + ly}" stroke="#292524" stroke-width="1.05" />`;
+          }
+          for (let ly = 1; ly >= pitchY(p, role) - 2; ly -= 9) {
+            html += `<line x1="${nx - 10}" y1="${topY + ly}" x2="${nx + 10}" y2="${topY + ly}" stroke="#292524" stroke-width="1.05" />`;
+          }
+          if (p.includes("#")) html += `<text x="${nx - 14}" y="${cy + 4}" font-size="12" fill="${color}">♯</text>`;
+          if (/^[A-G]b/.test(p)) html += `<text x="${nx - 14}" y="${cy + 4}" font-size="12" fill="${color}">♭</text>`;
+
+          if (role === "rhythm") {
+            html += `<g data-role="${role}" data-idx="${nIdx}" style="cursor:pointer">
+              <line x1="${nx - 5}" y1="${cy - 4}" x2="${nx + 5}" y2="${cy + 4}" stroke="${color}" stroke-width="2.0" />
+              <line x1="${nx - 5}" y1="${cy + 4}" x2="${nx + 5}" y2="${cy - 4}" stroke="${color}" stroke-width="2.0" />
+              <line x1="${nx + 5}" y1="${cy}" x2="${nx + 5}" y2="${cy - 20}" stroke="${color}" stroke-width="1.3" />
+            </g>`;
+            const padLbl = RHYTHM_PAD_LABELS[p] || "Vuruş";
+            html += `<text x="${nx}" y="${topY + 70}" text-anchor="middle" font-size="8.5" font-weight="600" fill="#57534e">${padLbl}</text>`;
+          } else {
+            const fillHead = ev.beats >= 2.0 ? "#fdfbf7" : color;
+            html += `<ellipse data-role="${role}" data-idx="${nIdx}" style="cursor:pointer" cx="${nx}" cy="${cy}" rx="5.2" ry="3.8" transform="rotate(-18 ${nx} ${cy})" fill="${fillHead}" stroke="${color}" stroke-width="1.5" />`;
+            if (ev.beats < 4.0) {
+              html += `<line x1="${nx + 4.8}" y1="${cy}" x2="${nx + 4.8}" y2="${cy - 21}" stroke="${color}" stroke-width="1.3" />`;
+            }
+          }
+        }
+      });
+
+      if (role === "melody" && ev.lyric) {
+        html += `<text x="${nx}" y="${topY + 70}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1e293b">${escXml(ev.lyric)}</text>`;
+      }
+      nx += noteAdvance(ev);
+    });
+  });
+
+  // Ölçü çizgileri (Barlines) ve ölçü numaraları (1, 2, 3...)
+  const tsParts = String(currentScore.time_signature || "4/4").split("/");
+  const tsNum = parseInt(tsParts[0], 10) || 4;
+  const tsDen = parseInt(tsParts[1], 10) || 4;
+  const beatsPerMeasure = tsNum * (4 / tsDen);
+  const melodyRef = currentScore.staves.melody || [];
+  let mBeats = 0, mNum = 1, bx = 125;
+  html += `<text x="123" y="20" font-size="8.5" font-weight="bold" fill="#78716c">1</text>`;
+  for (const ev of melodyRef) {
+    const d = ev.beats || 1.0;
+    const adv = noteAdvance(ev);
+    mBeats += d;
+    bx += adv;
+    if (mBeats >= beatsPerMeasure - 0.01) {
+      mBeats = 0;
+      mNum += 1;
+      for (let r = 0; r < 4; r++) {
+        const yTopLine = 22 + r * rowHeight + 10;
+        const yBotLine = yTopLine + 36;
+        html += `<line x1="${bx - 6}" y1="${yTopLine}" x2="${bx - 6}" y2="${yBotLine}" stroke="#57534e" stroke-width="1.2" opacity="0.7" />`;
+      }
+      html += `<text x="${bx - 3}" y="20" font-size="8.5" font-weight="bold" fill="#78716c">${mNum}</text>`;
+    }
+  }
+
+  const vis = currentPlayheadX > 0 ? "visible" : "hidden";
+  const px = currentPlayheadX > 0 ? currentPlayheadX : 125;
+  html += `<line id="playheadLine" x1="${px}" y1="4" x2="${px}" y2="${rowHeight * 4 + 18}" stroke="#dc2626" stroke-width="2.3" visibility="${vis}" />`;
+  html += `<polygon id="playheadArrow" points="${px - 6},4 ${px + 6},4 ${px},14" fill="#dc2626" visibility="${vis}" />`;
+
+  svg.innerHTML = html;
+  updateMiddleTransportUI();
+}
+
+document.getElementById("scoreSvg").addEventListener("click", (e) => {
+  if (!currentScore) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  if (y <= 20) {
+    const beatPos = xToBeatPos(x);
+    const beatSec = 60 / Math.max(40, currentScore.bpm || 116);
+    const targetSec = beatPos * beatSec;
+    updatePlayheadVisual(x);
+    const audio = document.getElementById("masterAudioPlayer");
+    if (audio && audio.src && audio.src !== window.location.href) {
+      audio.currentTime = Math.min(audio.duration || targetSec, targetSec);
+    }
+    updateMiddleTransportUI();
+    return;
+  }
+
+  const staffIdx = Math.min(3, Math.max(0, Math.floor((y - 20) / 86)));
+  const role = ["melody", "harmony", "bass", "rhythm"][staffIdx];
+
+  if (activeStaff !== role) {
+    activeStaff = role;
+    if (typeof renderToolbar === "function") renderToolbar();
+  }
+
+  const localY = y - (22 + staffIdx * 86);
+  const rawPitch = yToPitch(localY, role);
+  const pitch = (role === "rhythm" || !activeAccidental) ? rawPitch : (rawPitch[0] + activeAccidental + rawPitch.slice(1));
+
+  if (!currentScore.staves[role]) currentScore.staves[role] = [];
+  if (role === "harmony") {
+    currentScore.staves[role].push({ pitches: [pitch], beats: activeBeats });
+  } else {
+    currentScore.staves[role].push({ pitch, beats: activeBeats, lyric: role === "melody" ? "la" : "" });
+  }
+  drawSheet();
+  const sc = document.getElementById("sheetContainer");
+  sc.scrollLeft = sc.scrollWidth;
+});
+
+document.getElementById("scoreSvg").addEventListener("contextmenu", (e) => {
+  const target = e.target.closest("[data-role][data-idx]");
+  if (!target || !currentScore) return;
+  e.preventDefault();
+  const role = target.getAttribute("data-role");
+  const idx = parseInt(target.getAttribute("data-idx"), 10);
+  if (Array.isArray(currentScore.staves[role]) && idx >= 0 && idx < currentScore.staves[role].length) {
+    currentScore.staves[role].splice(idx, 1);
+    drawSheet();
+  }
+});
+
+function addRestNote() {
+  if (!currentScore) return;
+  if (!currentScore.staves[activeStaff]) currentScore.staves[activeStaff] = [];
+  currentScore.staves[activeStaff].push({ pitch: "REST", beats: activeBeats });
+  drawSheet();
+}
+
+function deleteLastNote() {
+  if (!currentScore) return;
+  (currentScore.staves[activeStaff] || []).pop();
+  drawSheet();
+}
+
+async function uploadSheetImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById("renderStatusText");
+  statusEl.textContent = `⏳ "${file.name}" analiz ediliyor (OMR / PDF / MIDI / XML)...`;
+  try {
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/upload-sheet", { method: "POST", body: fd });
+    const data = await res.json();
+    if (data.score) {
+      allScores.push(data.score);
+      selectScore(data.score.id);
+      const nCount = (data.score.staves?.melody || []).length;
+      statusEl.textContent = `✅ "${data.score.title}" içe aktarıldı (${nCount} melodi olayı • ${data.score.composer}).`;
+    }
+  } catch (err) {
+    statusEl.textContent = "Dosya yükleme hatası: " + err.message;
+  } finally {
+    e.target.value = "";
+  }
+}
+
+function duplicateScorePhrase() {
+  if (!currentScore) return;
+  ["melody", "harmony", "bass", "rhythm"].forEach(role => {
+    const list = currentScore.staves[role] || [];
+    if (list.length > 0) {
+      const cloned = JSON.parse(JSON.stringify(list));
+      currentScore.staves[role] = list.concat(cloned);
+    }
+  });
+  drawSheet();
+  const sc = document.getElementById("sheetContainer");
+  if (sc) sc.scrollLeft = sc.scrollWidth;
+  document.getElementById("renderStatusText").textContent = `🔁 Tüm dizek bölümleri çoğaltıldı (${(currentScore.staves.melody || []).length} melodi notası).`;
+}
+
+async function exportScoreAsFile(fmt) {
+  if (!currentScore) return;
+  const statusEl = document.getElementById("renderStatusText");
+  statusEl.textContent = `⏳ .${fmt.toUpperCase()} partisyon dosyası hazırlanıyor...`;
+  try {
+    const res = await fetch("/api/export-score-file", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ format: fmt, score: currentScore })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const a = document.createElement("a");
+    a.href = data.download_url;
+    a.download = data.filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    statusEl.textContent = `✅ ${data.filename} indirildi.`;
+  } catch (err) {
+    statusEl.textContent = "Partisyon dışa aktarma hatası: " + err.message;
+  }
+}
+
+document.addEventListener("keydown", (e) => {
+  const tag = (e.target && e.target.tagName || "").toUpperCase();
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+  if (!currentScore) return;
+
+  if (e.code === "Space") {
+    e.preventDefault();
+    toggleMiddlePlayPause();
+    return;
+  }
+  if (e.key === "Backspace") {
+    e.preventDefault();
+    deleteLastNote();
+    return;
+  }
+  const k = e.key.toUpperCase();
+  if (k === "R") {
+    e.preventDefault();
+    addRestNote();
+    return;
+  }
+  if (["C", "D", "E", "F", "G", "A", "B"].includes(k)) {
+    e.preventDefault();
+    const oct = (activeStaff === "bass" || activeStaff === "rhythm") ? "3" : "4";
+    const pitch = k + (activeAccidental || "") + oct;
+    if (!currentScore.staves[activeStaff]) currentScore.staves[activeStaff] = [];
+    if (activeStaff === "harmony") {
+      currentScore.staves[activeStaff].push({ pitches: [pitch], beats: activeBeats });
+    } else {
+      currentScore.staves[activeStaff].push({ pitch, beats: activeBeats, lyric: activeStaff === "melody" ? "la" : "" });
+    }
+    drawSheet();
+    const sc = document.getElementById("sheetContainer");
+    if (sc) sc.scrollLeft = sc.scrollWidth;
+  }
+});
+
+async function renderAndPlay() {
+  if (!currentScore) return;
+  stopAudio();
+  ensureStudioVisualizer();
+  const btn = document.getElementById("btnPlay");
+  const statusEl = document.getElementById("renderStatusText");
+  const wantMp4 = document.getElementById("chkExportMp4").checked;
+  const engineChoice = document.getElementById("engineChoiceSelect")?.value || "studio_ai";
+  btn.disabled = true;
+  btn.textContent = engineChoice === "dsp_sheet" ? "⏳ Sentezleniyor..." : "⏳ Stüdyo AI Besteliyor...";
+  statusEl.textContent = engineChoice === "dsp_sheet"
+    ? "Dizek notaları sentezleniyor..."
+    : "Stüdyo AI (ACE-Step) başlatılıyor; karmaşık söz ve orkestrasyon için lütfen bekleyin...";
+
+  let progressPoller = null;
+  if (engineChoice !== "dsp_sheet") {
+    progressPoller = setInterval(async () => {
+      try {
+        const pr = await fetch("/api/render-progress");
+        const pdata = await pr.json();
+        if (pdata.active && pdata.stage) {
+          statusEl.textContent = `${pdata.stage} ${pdata.detail ? "(" + pdata.detail + ")" : ""}`;
+        }
+      } catch (_) {}
+    }, 1500);
+  }
+
+  try {
+    applyLyricsToNotes(true);
+    const rawLyricsVal = document.getElementById("lyricsInput").value.trim();
+    const payload = {
+      ...currentScore,
+      lyrics_text: rawLyricsVal,
+      engine_choice: engineChoice,
+      quality_steps: 10,
+      target_duration_sec: Number(document.getElementById("targetDurationSelect")?.value || 0),
+      export_mp4: wantMp4
+    };
+    const res = await fetch("/api/render", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      let detail = "";
+      try { detail = (await res.text()).slice(0, 200); } catch (_) {}
+      throw new Error(`Sunucu hatası ${res.status} ${detail}`);
+    }
+    const data = await res.json();
+    const audio = document.getElementById("masterAudioPlayer");
+    audio.src = data.audio_url;
+
+    lastRenderedWavFilename = data.wav_filename || null;
+    const exportBar = document.getElementById("exportFormatBar");
+    if (exportBar && lastRenderedWavFilename) {
+      exportBar.classList.remove("hidden");
+    }
+
+    statusEl.textContent = `Çalınıyor: ${data.engine_mode}`;
+    await audio.play();
+
+    startPlayheadTracking();
+    updateMiddleTransportUI();
+  } catch (err) {
+    statusEl.textContent = "Sentez hatası: " + err.message;
+  } finally {
+    if (progressPoller) clearInterval(progressPoller);
+    btn.disabled = false;
+    btn.textContent = "▶ Sentezle & Çal";
+  }
+}
+
+window.addEventListener("beforeunload", () => {
+  try { navigator.sendBeacon("/api/cleanup-temp"); } catch (_) {}
+});
+
+function sanitizeDownloadBaseName(title) {
+  const clean = (title || "NotaStudyo_Eser")
+    .replace(/[\\/:*?"<>|]+/g, "_")
+    .replace(/\s+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return clean || "NotaStudyo_Eser";
+}
+
+async function saveAsFormat(fmt) {
+  if (!lastRenderedWavFilename) {
+    alert("Önce 'Sentezle & Çal' ile parçayı üretin.");
+    return;
+  }
+  const statusEl = document.getElementById("renderStatusText");
+  const prevStatus = statusEl.textContent;
+  const upper = fmt.toUpperCase();
+  statusEl.textContent = fmt === "mp4"
+    ? "🎬 HD .MP4 video klip oluşturuluyor (birkaç saniye sürebilir)..."
+    : `⏳ .${upper} dosyası hazırlanıyor...`;
+
+  try {
+    const res = await fetch("/api/export-format", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        wav_filename: lastRenderedWavFilename,
+        format: fmt,
+        score: fmt === "mp4" ? currentScore : null
+      })
+    });
+    if (!res.ok) {
+      let detail = "";
+      try { detail = (await res.text()).slice(0, 180); } catch (_) {}
+      throw new Error(`Sunucu hatası ${res.status} ${detail}`);
+    }
+    const data = await res.json();
+    const baseName = sanitizeDownloadBaseName(currentScore?.title);
+    const suggestedName = `${baseName}.${fmt}`;
+
+    const mimeTypes = {
+      wav:  { description: "WAV Kayıpsız Ses",  accept: { "audio/wav": [".wav"] } },
+      mp3:  { description: "MP3 Ses Dosyası",  accept: { "audio/mpeg": [".mp3"] } },
+      mp4:  { description: "MP4 Video Klip",   accept: { "video/mp4": [".mp4"] } },
+      flac: { description: "FLAC Kayıpsız Ses", accept: { "audio/flac": [".flac"] } },
+      ogg:  { description: "OGG Ses Dosyası",  accept: { "audio/ogg": [".ogg"] } }
+    };
+
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName,
+          types: mimeTypes[fmt] ? [mimeTypes[fmt]] : []
+        });
+        const fileResp = await fetch(data.file_url);
+        const blob = await fileResp.blob();
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        statusEl.textContent = `✅ "${handle.name}" olarak kaydedildi.`;
+        return;
+      } catch (pickerErr) {
+        if (pickerErr && pickerErr.name === "AbortError") {
+          statusEl.textContent = prevStatus;
+          return;
+        }
+      }
+    }
+
+    const a = document.createElement("a");
+    a.href = data.download_url;
+    a.download = suggestedName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    statusEl.textContent = `✅ "${suggestedName}" indirildi.`;
+  } catch (err) {
+    statusEl.textContent = "Kaydetme hatası: " + err.message;
+  }
+}
+
+function startPlayheadTracking() {
+  if (playheadTimer) clearInterval(playheadTimer);
+  const audio = document.getElementById("masterAudioPlayer");
+  const sc = document.getElementById("sheetContainer");
+  playheadTimer = setInterval(() => {
+    if (!audio || audio.paused || audio.ended) {
+      if (audio && audio.ended) {
+        updatePlayheadVisual(-1);
+      }
+      updateMiddleTransportUI();
+      clearInterval(playheadTimer);
+      playheadTimer = null;
+      return;
+    }
+    const melody = currentScore?.staves?.melody || [];
+    const totalBeats = melody.reduce((acc, ev) => acc + (ev.beats || 1.0), 0) || 1;
+    const scoreSec = getScoreTotalSeconds() || 1;
+    const effectiveDur = (audio.duration && isFinite(audio.duration) && audio.duration > 0) ? audio.duration : scoreSec;
+    const beatPos = (audio.currentTime / effectiveDur) * totalBeats;
+    const x = beatPosToX(beatPos);
+    updatePlayheadVisual(x);
+    updateMiddleTransportUI();
+    if (sc && (x - sc.scrollLeft > sc.clientWidth - 45 || x < sc.scrollLeft)) {
+      sc.scrollLeft = Math.max(0, x - 140);
+    }
+  }, 50);
+}
+
+async function toggleMiddlePlayPause() {
+  const audio = document.getElementById("masterAudioPlayer");
+  if (!audio) return;
+  if (!audio.src || audio.src === window.location.href) {
+    await renderAndPlay();
+    return;
+  }
+  ensureStudioVisualizer();
+  if (audio.paused) {
+    if (audio.ended) audio.currentTime = 0;
+    await audio.play();
+    startPlayheadTracking();
+    updateMiddleTransportUI();
+  } else {
+    audio.pause();
+    if (playheadTimer) {
+      clearInterval(playheadTimer);
+      playheadTimer = null;
+    }
+    updateMiddleTransportUI();
+  }
+}
+
+function onMidSeekInput(val) {
+  isUserScrubbing = true;
+  const audio = document.getElementById("masterAudioPlayer");
+  const scoreSec = getScoreTotalSeconds();
+  const totalSec = (audio && audio.duration && isFinite(audio.duration) && audio.duration > 0) ? audio.duration : scoreSec;
+  const targetSec = (Number(val) / 1000) * totalSec;
+  const beatSec = 60 / Math.max(40, currentScore?.bpm || 116);
+  const x = beatPosToX(targetSec / beatSec);
+  updatePlayheadVisual(x);
+  const sc = document.getElementById("sheetContainer");
+  if (sc) sc.scrollLeft = Math.max(0, x - 160);
+  const curEl = document.getElementById("midTimeCurrent");
+  if (curEl) curEl.textContent = formatSecMMSS(targetSec);
+}
+
+function onMidSeekCommit(val) {
+  isUserScrubbing = false;
+  const audio = document.getElementById("masterAudioPlayer");
+  const scoreSec = getScoreTotalSeconds();
+  const totalSec = (audio && audio.duration && isFinite(audio.duration) && audio.duration > 0) ? audio.duration : scoreSec;
+  const targetSec = (Number(val) / 1000) * totalSec;
+  if (audio && audio.src && audio.src !== window.location.href) {
+    audio.currentTime = Math.min(totalSec, Math.max(0, targetSec));
+  }
+  updateMiddleTransportUI();
+}
+
+function stopAudio() {
+  const audio = document.getElementById("masterAudioPlayer");
+  audio.pause();
+  audio.currentTime = 0;
+  if (playheadTimer) {
+    clearInterval(playheadTimer);
+    playheadTimer = null;
+  }
+  updatePlayheadVisual(-1);
+  updateMiddleTransportUI();
+}
+
+init();
+</script>
+</body>
+</html>

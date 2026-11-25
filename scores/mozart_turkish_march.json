@@ -1,0 +1,77 @@
+{
+  "id": "mozart_turkish_march",
+  "title": "Türk Marşı (Rondo Alla Turca)",
+  "composer": "Wolfgang Amadeus Mozart (K. 331)",
+  "bpm": 132,
+  "time_signature": "2/4",
+  "key_signature": "La Minör / La Majör",
+  "instruments": {
+    "piano": { "count": 2, "role": "melody" },
+    "flute": { "count": 1, "role": "melody" },
+    "violin": { "count": 3, "role": "harmony" },
+    "cello": { "count": 2, "role": "bass" },
+    "drums": { "count": 1, "role": "rhythm" }
+  },
+  "vocals": {},
+  "staves": {
+    "melody": [
+      { "pitch": "B4", "beats": 0.5, "lyric": "" },
+      { "pitch": "A4", "beats": 0.5, "lyric": "" },
+      { "pitch": "G#4", "beats": 0.5, "lyric": "" },
+      { "pitch": "A4", "beats": 0.5, "lyric": "" },
+      { "pitch": "C5", "beats": 1.0, "lyric": "" },
+      { "pitch": "REST", "beats": 1.0, "lyric": "" },
+      { "pitch": "D5", "beats": 0.5, "lyric": "" },
+      { "pitch": "C5", "beats": 0.5, "lyric": "" },
+      { "pitch": "B4", "beats": 0.5, "lyric": "" },
+      { "pitch": "C5", "beats": 0.5, "lyric": "" },
+      { "pitch": "E5", "beats": 1.0, "lyric": "" },
+      { "pitch": "REST", "beats": 1.0, "lyric": "" },
+      { "pitch": "F5", "beats": 0.5, "lyric": "" },
+      { "pitch": "E5", "beats": 0.5, "lyric": "" },
+      { "pitch": "D#5", "beats": 0.5, "lyric": "" },
+      { "pitch": "E5", "beats": 0.5, "lyric": "" },
+      { "pitch": "B5", "beats": 0.5, "lyric": "" },
+      { "pitch": "A5", "beats": 0.5, "lyric": "" },
+      { "pitch": "G#5", "beats": 0.5, "lyric": "" },
+      { "pitch": "A5", "beats": 0.5, "lyric": "" },
+      { "pitch": "B5", "beats": 0.5, "lyric": "" },
+      { "pitch": "A5", "beats": 0.5, "lyric": "" },
+      { "pitch": "G#5", "beats": 0.5, "lyric": "" },
+      { "pitch": "A5", "beats": 0.5, "lyric": "" },
+      { "pitch": "C6", "beats": 1.0, "lyric": "" },
+      { "pitch": "A5", "beats": 1.0, "lyric": "" },
+      { "pitch": "C6", "beats": 1.0, "lyric": "" }
+    ],
+    "harmony": [
+      { "pitches": ["A3", "C4", "E4"], "beats": 2.0 },
+      { "pitches": ["A3", "C4", "E4"], "beats": 2.0 },
+      { "pitches": ["A3", "C4", "E4"], "beats": 2.0 },
+      { "pitches": ["A3", "C4", "E4"], "beats": 2.0 },
+      { "pitches": ["A3", "C4", "E4"], "beats": 2.0 },
+      { "pitches": ["E3", "G#3", "B3"], "beats": 2.0 },
+      { "pitches": ["A3", "C4", "E4"], "beats": 2.0 },
+      { "pitches": ["A3", "C4", "E4"], "beats": 1.0 }
+    ],
+    "bass": [
+      { "pitch": "A2", "beats": 1.0 }, { "pitch": "E3", "beats": 1.0 },
+      { "pitch": "A2", "beats": 1.0 }, { "pitch": "E3", "beats": 1.0 },
+      { "pitch": "A2", "beats": 1.0 }, { "pitch": "E3", "beats": 1.0 },
+      { "pitch": "A2", "beats": 1.0 }, { "pitch": "E3", "beats": 1.0 },
+      { "pitch": "A2", "beats": 1.0 }, { "pitch": "E3", "beats": 1.0 },
+      { "pitch": "E2", "beats": 1.0 }, { "pitch": "B2", "beats": 1.0 },
+      { "pitch": "A2", "beats": 1.0 }, { "pitch": "E3", "beats": 1.0 },
+      { "pitch": "A2", "beats": 1.0 }
+    ],
+    "rhythm": [
+      { "pitch": "A2", "beats": 1.0 }, { "pitch": "E3", "beats": 1.0 },
+      { "pitch": "A2", "beats": 1.0 }, { "pitch": "E3", "beats": 1.0 },
+      { "pitch": "A2", "beats": 1.0 }, { "pitch": "E3", "beats": 1.0 },
+      { "pitch": "A2", "beats": 1.0 }, { "pitch": "E3", "beats": 1.0 },
+      { "pitch": "A2", "beats": 1.0 }, { "pitch": "E3", "beats": 1.0 },
+      { "pitch": "A2", "beats": 1.0 }, { "pitch": "E3", "beats": 1.0 },
+      { "pitch": "A2", "beats": 1.0 }, { "pitch": "E3", "beats": 1.0 },
+      { "pitch": "A2", "beats": 1.0 }
+    ]
+  }
+}

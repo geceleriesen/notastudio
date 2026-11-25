@@ -1,0 +1,82 @@
+{
+  "id": "vivaldi_spring",
+  "title": "Dört Mevsim — İlkbahar (La Primavera)",
+  "composer": "Antonio Vivaldi (Op. 8 No. 1)",
+  "bpm": 124,
+  "time_signature": "4/4",
+  "key_signature": "Mi Majör (F#, C#, G#, D#)",
+  "instruments": {
+    "violin": { "count": 6, "role": "melody" },
+    "viola": { "count": 2, "role": "harmony" },
+    "harp": { "count": 1, "role": "harmony" },
+    "cello": { "count": 2, "role": "bass" },
+    "contrabass": { "count": 1, "role": "bass" },
+    "timpani": { "count": 1, "role": "rhythm" }
+  },
+  "vocals": {},
+  "staves": {
+    "melody": [
+      { "pitch": "E4", "beats": 1.0, "lyric": "" },
+      { "pitch": "G#4", "beats": 1.0, "lyric": "" },
+      { "pitch": "G#4", "beats": 1.0, "lyric": "" },
+      { "pitch": "G#4", "beats": 1.0, "lyric": "" },
+      { "pitch": "F#4", "beats": 0.5, "lyric": "" },
+      { "pitch": "E4", "beats": 0.5, "lyric": "" },
+      { "pitch": "B4", "beats": 3.0, "lyric": "" },
+      { "pitch": "B4", "beats": 0.5, "lyric": "" },
+      { "pitch": "A4", "beats": 0.5, "lyric": "" },
+      { "pitch": "G#4", "beats": 1.0, "lyric": "" },
+      { "pitch": "G#4", "beats": 1.0, "lyric": "" },
+      { "pitch": "G#4", "beats": 1.0, "lyric": "" },
+      { "pitch": "F#4", "beats": 0.5, "lyric": "" },
+      { "pitch": "E4", "beats": 0.5, "lyric": "" },
+      { "pitch": "B4", "beats": 3.0, "lyric": "" },
+      { "pitch": "B4", "beats": 0.5, "lyric": "" },
+      { "pitch": "A4", "beats": 0.5, "lyric": "" },
+      { "pitch": "G#4", "beats": 1.0, "lyric": "" },
+      { "pitch": "A4", "beats": 0.5, "lyric": "" },
+      { "pitch": "B4", "beats": 0.5, "lyric": "" },
+      { "pitch": "A4", "beats": 1.0, "lyric": "" },
+      { "pitch": "G#4", "beats": 1.0, "lyric": "" },
+      { "pitch": "F#4", "beats": 2.0, "lyric": "" },
+      { "pitch": "D#4", "beats": 1.0, "lyric": "" },
+      { "pitch": "B3", "beats": 1.0, "lyric": "" }
+    ],
+    "harmony": [
+      { "pitches": ["E4", "G#4", "B4"], "beats": 2.0 },
+      { "pitches": ["E4", "G#4", "B4"], "beats": 2.0 },
+      { "pitches": ["E4", "G#4", "B4"], "beats": 2.0 },
+      { "pitches": ["D#4", "F#4", "B4"], "beats": 2.0 },
+      { "pitches": ["E4", "G#4", "B4"], "beats": 2.0 },
+      { "pitches": ["E4", "G#4", "B4"], "beats": 2.0 },
+      { "pitches": ["E4", "G#4", "B4"], "beats": 2.0 },
+      { "pitches": ["D#4", "F#4", "B4"], "beats": 2.0 },
+      { "pitches": ["E4", "A4", "C#5"], "beats": 2.0 },
+      { "pitches": ["E4", "G#4", "B4"], "beats": 2.0 },
+      { "pitches": ["D#4", "F#4", "B4"], "beats": 2.0 },
+      { "pitches": ["D#4", "F#4", "B4"], "beats": 2.0 }
+    ],
+    "bass": [
+      { "pitch": "E3", "beats": 2.0 }, { "pitch": "E3", "beats": 2.0 },
+      { "pitch": "G#3", "beats": 2.0 }, { "pitch": "B2", "beats": 2.0 },
+      { "pitch": "E3", "beats": 2.0 }, { "pitch": "E3", "beats": 2.0 },
+      { "pitch": "G#3", "beats": 2.0 }, { "pitch": "B2", "beats": 2.0 },
+      { "pitch": "A2", "beats": 2.0 }, { "pitch": "E3", "beats": 2.0 },
+      { "pitch": "B2", "beats": 2.0 }, { "pitch": "B2", "beats": 2.0 }
+    ],
+    "rhythm": [
+      { "pitch": "E3", "beats": 1.0 }, { "pitch": "REST", "beats": 1.0 },
+      { "pitch": "B2", "beats": 1.0 }, { "pitch": "REST", "beats": 1.0 },
+      { "pitch": "E3", "beats": 1.0 }, { "pitch": "REST", "beats": 1.0 },
+      { "pitch": "B2", "beats": 1.0 }, { "pitch": "B2", "beats": 1.0 },
+      { "pitch": "E3", "beats": 1.0 }, { "pitch": "REST", "beats": 1.0 },
+      { "pitch": "B2", "beats": 1.0 }, { "pitch": "REST", "beats": 1.0 },
+      { "pitch": "E3", "beats": 1.0 }, { "pitch": "REST", "beats": 1.0 },
+      { "pitch": "B2", "beats": 1.0 }, { "pitch": "B2", "beats": 1.0 },
+      { "pitch": "A2", "beats": 1.0 }, { "pitch": "E3", "beats": 1.0 },
+      { "pitch": "B2", "beats": 1.0 }, { "pitch": "REST", "beats": 1.0 },
+      { "pitch": "B2", "beats": 1.0 }, { "pitch": "B2", "beats": 1.0 },
+      { "pitch": "E3", "beats": 2.0 }
+    ]
+  }
+}
