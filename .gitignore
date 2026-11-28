@@ -1,25 +1,15 @@
-# Python & Sanal Ortam (Virtual Environment)
-venv/
+﻿venv/
 .venv/
-env/
 __pycache__/
 *.py[cod]
-*$py.class
-
-# Yapay Zeka Model Önbelleği (~4.8 GB - Kullanıcıda ilk çalışmada otomatik iner)
 models_cache/
 *.safetensors
 *.ckpt
 *.bin
 *.pt
-
-# Geçici Render & Kullanıcı Çıktıları
 temp_renders/
 exports/
 soundfonts/*.sf2
-
-# İşletim Sistemi & IDE
+*.zip
 .DS_Store
 Thumbs.db
-.vscode/
-.idea/
