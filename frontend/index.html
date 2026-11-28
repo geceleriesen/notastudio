@@ -154,10 +154,15 @@
         <option value="240">⏱️ 4 Dakika (3 Bölüm)</option>
       </select>
 
-      <label class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-900/90 border border-slate-700/80 text-[11px] cursor-pointer hover:border-slate-600" title="Ses dalgalı MP4 video klip de üretir">
-        <input id="chkExportMp4" type="checkbox" class="accent-amber-500" />
-        <span>🎬 .MP4 Klip</span>
-      </label>
+      <div class="flex items-center gap-1">
+        <label class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-900/90 border border-slate-700/80 text-[11px] cursor-pointer hover:border-slate-600" title="Sentezle birlikte MP4 video klip de üretir">
+          <input id="chkExportMp4" type="checkbox" class="accent-amber-500" />
+          <span>🎬 .MP4</span>
+        </label>
+        <button id="btnOpenClipStudio" type="button" onclick="openClipStudioModal()" class="px-2 py-1 rounded-lg bg-purple-600/20 hover:bg-purple-600/35 text-purple-200 border border-purple-500/40 text-[11px] font-semibold transition" title="Video klip modunu seçin: Sadece Soundwave, Konser Salonu Sahnesi, AI Klip veya Kendi Videonuz">
+          🎞️ Klip: Soundwave
+        </button>
+      </div>
 
       <label class="px-2.5 py-1 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-slate-700/80 text-xs font-semibold cursor-pointer transition">
         📤 Nota / PDF / MIDI Yükle
@@ -322,14 +327,16 @@
       <div id="vocalList" class="grid grid-cols-1 gap-1 max-h-52 overflow-y-auto pr-0.5"></div>
 
       <div class="border-t border-slate-800/80 pt-2 flex-1 flex flex-col">
-        <div class="flex items-center justify-between mb-1">
+        <div class="flex items-center justify-between gap-1 mb-1">
           <span class="text-xs font-bold text-slate-200">Şarkı Sözleri & Hece Editörü</span>
-          <button onclick="applyLyricsToNotes()" class="px-2.5 py-1 rounded bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-[11px] transition">
-            Notalara Eşle
+          <button onclick="applyLyricsToNotes(false, true)" class="px-2.5 py-1 rounded bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-[11px] transition" title="Söz hecelerine göre nota sayısını, durakları ve tempoyu otomatik senkronlar">
+            🪄 Söze Göre Eşle
           </button>
         </div>
-        <p class="text-[11px] text-slate-400 mb-1">Sözlerinizi tire (<code class="text-amber-300">-</code>) veya boşlukla ayırıp eşleyin; seçili sanatçı melodiyi söyler.</p>
-        <textarea id="lyricsInput" oninput="applyLyricsToNotes(true)" rows="4" class="w-full rounded-lg bg-slate-950/90 border border-slate-700/90 p-2 text-xs text-slate-100 focus:border-amber-500 focus:outline-none leading-relaxed shadow-inner"></textarea>
+        <div id="lyricSyncStats" class="mb-1 px-2 py-1 rounded bg-slate-950/90 border border-slate-800 text-[10px] font-mono text-emerald-300 flex items-center justify-between">
+          <span>Söz & Zaman Senkronu: Hazır</span>
+        </div>
+        <textarea id="lyricsInput" oninput="applyLyricsToNotes(true, false)" rows="4" placeholder="Şarkı sözlerinizi buraya yazın; her satır ve hece notalara ve zamana otomatik oturtulur..." class="w-full rounded-lg bg-slate-950/90 border border-slate-700/90 p-2 text-xs text-slate-100 focus:border-amber-500 focus:outline-none leading-relaxed shadow-inner"></textarea>
 
         <!-- Stüdyo Master Çıkış & Stereo VU Metre Rafı -->
         <div class="mt-2 p-2.5 rounded-lg studio-lcd text-[11px] space-y-2">
@@ -371,6 +378,71 @@
       </div>
     </aside>
   </main>
+
+  <!-- Video Klip Stüdyosu Modalı -->
+  <div id="clipStudioModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="studio-rack w-full max-w-2xl rounded-2xl border border-slate-700 p-4 shadow-2xl space-y-3">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🎬</span>
+          <h3 class="text-sm font-extrabold text-amber-400 tracking-wide">VİDEO KLİP STÜDYOSU (.MP4 ÇIKTI AYARI)</h3>
+        </div>
+        <button type="button" onclick="closeClipStudioModal()" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold">✕ Kapat</button>
+      </div>
+
+      <p class="text-[11px] text-slate-300 leading-relaxed">
+        Varsayılan olarak MP4 çıktısında <strong>nota şablon başlığı veya yazı yer almaz</strong>; yalnızca saf ses dalgası (soundwave) videosu üretilir. İsterseniz konser salonu sahnesi, AI klip veya kendi videonuzu ekleyebilirsiniz:
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <button type="button" id="clipOpt_soundwave" onclick="selectClipMode('soundwave')" class="clip-opt-btn p-2.5 rounded-xl border border-amber-500 bg-slate-800/95 text-left transition">
+          <div class="text-xs font-bold text-amber-300">🌊 Sadece Soundwave (Varsayılan)</div>
+          <div class="text-[10.5px] text-slate-300 mt-0.5">Başlıksız, yazısız, koyu stüdyo zemininde saf ses dalgası videosu.</div>
+        </button>
+
+        <button type="button" id="clipOpt_concert_hall" onclick="selectClipMode('concert_hall')" class="clip-opt-btn p-2.5 rounded-xl border border-slate-700 bg-slate-950/80 text-left transition">
+          <div class="text-xs font-bold text-emerald-300">🏛️ Konser Salonu & Ekli Enstrümanlar</div>
+          <div class="text-[10.5px] text-slate-300 mt-0.5">Havuzda seçtiğiniz aktif çalgılar ve vokalistlerle konser sahnesi + ses dalgası.</div>
+        </button>
+
+        <button type="button" id="clipOpt_ai_clip" onclick="selectClipMode('ai_clip')" class="clip-opt-btn p-2.5 rounded-xl border border-slate-700 bg-slate-950/80 text-left transition">
+          <div class="text-xs font-bold text-sky-300">✨ AI Konser Klibi (Sinematik Sahne)</div>
+          <div class="text-[10.5px] text-slate-300 mt-0.5">Seçili enstrümanlara göre sinematik sahne + yavaş kamera hareketi + ses dalgası.</div>
+        </button>
+
+        <label id="clipOpt_custom_upload" class="clip-opt-btn p-2.5 rounded-xl border border-slate-700 bg-slate-950/80 text-left cursor-pointer hover:border-purple-400 transition">
+          <div class="text-xs font-bold text-purple-300">📁 Kendi Video / Görsel Klibini Yükle</div>
+          <div id="customClipFileLabel" class="text-[10.5px] text-slate-300 mt-0.5">.MP4, .MOV, .WEBM veya .PNG / .JPG kapak seçin.</div>
+          <input type="file" accept="video/mp4,video/quicktime,video/webm,image/png,image/jpeg,image/webp,.mp4,.mov,.webm,.png,.jpg,.jpeg" class="hidden" onchange="handleCustomClipUpload(event)" />
+        </label>
+      </div>
+
+      <div id="aiClipPromptRow" class="hidden space-y-1">
+        <label class="text-[11px] font-semibold text-sky-300">AI Sahne Tarifi (İsteğe bağlı — boş bırakılırsa aktif enstrümanlardan otomatik oluşturulur):</label>
+        <input id="aiClipPromptInput" type="text" placeholder="Örn: Altın spot ışıklı büyük senfoni konser salonu, gece sahnesi..." class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-slate-100 focus:border-sky-400 focus:outline-none" />
+      </div>
+
+      <!-- Sahne Önizleme Alanı -->
+      <div class="rounded-xl bg-slate-950 border border-slate-800 p-2 flex flex-col items-center gap-2">
+        <div class="w-full flex items-center justify-between">
+          <span class="text-[10.5px] font-mono text-slate-400">KLİP SAHNE ÖNİZLEMESİ (1280×720 HD)</span>
+          <button type="button" onclick="refreshStagePreview()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold text-amber-300 border border-slate-700">
+            👁️ Sahneyi Önizle
+          </button>
+        </div>
+        <img id="stagePreviewImg" alt="Sahne Önizlemesi" class="hidden w-full max-h-56 object-contain rounded-lg border border-slate-800" />
+        <div id="stagePreviewPlaceholder" class="text-[11px] text-slate-400 py-4 text-center">
+          Seçili klip modu: <strong class="text-amber-300">Sadece Soundwave (Başlıksız / Yazısız)</strong>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-1">
+        <button type="button" onclick="closeClipStudioModal()" class="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs">
+          Tamam & Uygula
+        </button>
+      </div>
+    </div>
+  </div>
 
   <audio id="masterAudioPlayer" crossorigin="anonymous" class="hidden"></audio>
 
@@ -901,51 +973,293 @@ function syllabifyLatinWord(word) {
   return parts.map((p, idx) => (idx < parts.length - 1 ? p + "-" : p));
 }
 
-function tokenizeLyricsUniversal(rawText) {
-  const tokens = [];
-  const words = rawText.replace(/\n+/g, " ").split(/\s+/).filter(Boolean);
-  for (const w of words) {
-    if (w.includes("-")) {
-      const sub = w.split("-").filter(Boolean);
-      sub.forEach((s, idx) => tokens.push(idx < sub.length - 1 ? s + "-" : s));
-      continue;
-    }
-    const isCJK = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af]/.test(w);
-    if (isCJK) {
-      Array.from(w).forEach(ch => tokens.push(ch));
-    } else {
-      tokens.push(...syllabifyLatinWord(w));
-    }
-  }
-  return tokens;
+let selectedClipMode = "soundwave"; // "soundwave" | "concert_hall" | "ai_clip" | "custom_upload"
+let uploadedClipFileId = "";
+let uploadedClipOrigName = "";
+
+function openClipStudioModal() {
+  const modal = document.getElementById("clipStudioModal");
+  if (modal) modal.classList.remove("hidden");
+  updateClipModalUI();
+  refreshStagePreview();
 }
 
-function applyLyricsToNotes(silent = false) {
+function closeClipStudioModal() {
+  const modal = document.getElementById("clipStudioModal");
+  if (modal) modal.classList.add("hidden");
+}
+
+function selectClipMode(mode) {
+  selectedClipMode = mode;
+  updateClipModalUI();
+  if (mode !== "custom_upload") {
+    refreshStagePreview();
+  }
+}
+
+function updateClipModalUI() {
+  const modes = ["soundwave", "concert_hall", "ai_clip", "custom_upload"];
+  modes.forEach(m => {
+    const el = document.getElementById("clipOpt_" + m);
+    if (!el) return;
+    const isSel = (selectedClipMode === m);
+    el.className = isSel
+      ? "clip-opt-btn p-2.5 rounded-xl border-2 border-amber-400 bg-slate-800/95 text-left transition cursor-pointer"
+      : "clip-opt-btn p-2.5 rounded-xl border border-slate-700 bg-slate-950/80 text-left transition cursor-pointer hover:border-slate-500";
+  });
+
+  const promptRow = document.getElementById("aiClipPromptRow");
+  if (promptRow) {
+    promptRow.classList.toggle("hidden", selectedClipMode !== "ai_clip");
+  }
+
+  const badgeBtn = document.getElementById("btnOpenClipStudio");
+  const modeLabels = {
+    soundwave: "🎞️ Klip: Soundwave",
+    concert_hall: "🏛️ Klip: Konser Salonu",
+    ai_clip: "✨ Klip: AI Sahne",
+    custom_upload: "📁 Klip: Özel Video",
+  };
+  if (badgeBtn) badgeBtn.textContent = modeLabels[selectedClipMode] || "🎞️ Klip: Soundwave";
+}
+
+async function handleCustomClipUpload(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const lbl = document.getElementById("customClipFileLabel");
+  if (lbl) lbl.textContent = `⏳ "${file.name}" yükleniyor...`;
+  try {
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/upload-clip", { method: "POST", body: fd });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    uploadedClipFileId = data.clip_file_id || "";
+    uploadedClipOrigName = data.original_name || file.name;
+    selectedClipMode = "custom_upload";
+    if (lbl) lbl.textContent = `✅ Yüklendi: ${uploadedClipOrigName}`;
+    updateClipModalUI();
+    const prevImg = document.getElementById("stagePreviewImg");
+    const prevPh = document.getElementById("stagePreviewPlaceholder");
+    if (data.media_type === "image" && prevImg) {
+      prevImg.src = `/api/temp-media/${uploadedClipFileId}`;
+      prevImg.classList.remove("hidden");
+      if (prevPh) prevPh.classList.add("hidden");
+    } else if (prevPh) {
+      prevPh.innerHTML = `✅ Özel video klibi hazır: <strong class="text-purple-300">${uploadedClipOrigName}</strong> (Şarkı süresine göre otomatik eşlenecek)`;
+      prevPh.classList.remove("hidden");
+      if (prevImg) prevImg.classList.add("hidden");
+    }
+  } catch (err) {
+    if (lbl) lbl.textContent = "Yükleme hatası: " + err.message;
+  } finally {
+    e.target.value = "";
+  }
+}
+
+async function refreshStagePreview() {
+  if (!currentScore) return;
+  const prevImg = document.getElementById("stagePreviewImg");
+  const prevPh = document.getElementById("stagePreviewPlaceholder");
+  if (selectedClipMode === "custom_upload") return;
+  if (prevPh) {
+    prevPh.textContent = "⏳ Sahne önizlemesi hazırlanıyor...";
+    prevPh.classList.remove("hidden");
+  }
+  try {
+    const res = await fetch("/api/preview-stage-clip", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        score: currentScore,
+        clip_mode: selectedClipMode,
+        clip_prompt: document.getElementById("aiClipPromptInput")?.value || ""
+      })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (prevImg && data.preview_url) {
+      prevImg.src = data.preview_url + "?t=" + Date.now();
+      prevImg.classList.remove("hidden");
+      if (prevPh) prevPh.classList.add("hidden");
+    }
+  } catch (err) {
+    if (prevPh) prevPh.textContent = "Önizleme bilgisi: " + err.message;
+  }
+}
+
+function tokenizeLyricsWithPhrases(rawText) {
+  // Her satiri ayri analiz ederek heceleri ve satir/virgul nefes duraklarini cikarir
+  const items = []; // { type: "syllable", text: "gö-" } | { type: "breath", beats: 0.5 }
+  const lines = rawText.splitlines ? rawText.splitlines() : rawText.split(/\r?\n/);
+  lines.forEach((line, lIdx) => {
+    const cleanLine = line.trim();
+    if (!cleanLine) return;
+    const words = cleanLine.split(/\s+/).filter(Boolean);
+    words.forEach((rawW, wIdx) => {
+      const hasPunctPause = /[,.;:!?]$/.test(rawW);
+      const w = rawW.replace(/^[,.;:!?'"()]+|[,.;:!?'"()]+$/g, "");
+      if (!w) return;
+      if (w.includes("-")) {
+        const sub = w.split("-").filter(Boolean);
+        sub.forEach((s, idx) => items.push({ type: "syllable", text: idx < sub.length - 1 ? s + "-" : s }));
+      } else {
+        const isCJK = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af]/.test(w);
+        if (isCJK) {
+          Array.from(w).forEach(ch => items.push({ type: "syllable", text: ch }));
+        } else {
+          syllabifyLatinWord(w).forEach(syl => items.push({ type: "syllable", text: syl }));
+        }
+      }
+      if (hasPunctPause && wIdx < words.length - 1) {
+        items.push({ type: "breath", beats: 0.5 });
+      }
+    });
+    if (lIdx < lines.length - 1) {
+      items.push({ type: "breath", beats: 1.0 });
+    }
+  });
+  return items;
+}
+
+function tokenizeLyricsUniversal(rawText) {
+  return tokenizeLyricsWithPhrases(rawText)
+    .filter(it => it.type === "syllable")
+    .map(it => it.text);
+}
+
+function updateLyricSyncStatsBadge(syllableCount, lineCount, syncedSec, synced) {
+  const el = document.getElementById("lyricSyncStats");
+  if (!el) return;
+  if (syllableCount <= 0) {
+    el.innerHTML = `<span class="text-slate-400">Enstrümantal mod (Söz girilmedi)</span>`;
+    return;
+  }
+  const mmss = formatSecMMSS(syncedSec);
+  el.innerHTML = synced
+    ? `<span>✅ ${syllableCount} Hece • ${lineCount} Satır • Senkron: <strong>${mmss}</strong></span>`
+    : `<span>📝 ${syllableCount} Hece • ${lineCount} Satır • Tahmini: ${mmss}</span>`;
+}
+
+function applyLyricsToNotes(silent = false, autoExtendAndPace = false) {
   if (!currentScore) return;
   const raw = document.getElementById("lyricsInput").value.trim();
-  const tokens = tokenizeLyricsUniversal(raw);
+  const phraseItems = tokenizeLyricsWithPhrases(raw);
+  const syllables = phraseItems.filter(it => it.type === "syllable").map(it => it.text);
+  const lineCount = raw ? raw.split(/\r?\n/).filter(l => l.trim()).length : 0;
+
+  // Tum notalardaki eski sablon hecelerini ("la la la" vb.) tamamen temizle
+  (currentScore.staves.melody || []).forEach(n => { n.lyric = ""; });
+
+  if (syllables.length === 0) {
+    updateLyricSyncStatsBadge(0, 0, getScoreTotalSeconds(), false);
+    drawSheet();
+    return;
+  }
+
+  // Tam senkronizasyon: yazilan soz hece sayisina gore melodiyi uzat, nefes duraklarini yerlestir ve tempoyu dengele
+  if (autoExtendAndPace) {
+    const baseMel = (currentScore.staves.melody || []).filter(n => n.pitch && n.pitch !== "REST");
+    const seedNotes = baseMel.length > 0
+      ? JSON.parse(JSON.stringify(baseMel))
+      : [
+          { pitch: "C4", beats: 1.0, lyric: "" },
+          { pitch: "D4", beats: 1.0, lyric: "" },
+          { pitch: "E4", beats: 1.0, lyric: "" },
+          { pitch: "G4", beats: 1.0, lyric: "" },
+          { pitch: "E4", beats: 1.0, lyric: "" },
+          { pitch: "D4", beats: 1.0, lyric: "" },
+        ];
+
+    // 1. Hizli 0.5'lik sablon notalarini soz soylemeye uygun 1.0 dortluk sureye cek
+    const pacedSeed = seedNotes.map(n => ({
+      pitch: n.pitch,
+      beats: (Number(n.beats) || 1.0) < 0.75 ? 1.0 : Number(n.beats) || 1.0,
+      lyric: ""
+    }));
+
+    // 2. Her hece ve satir sonu nefesi icin melodi dizisini birebir olustur
+    const syncedMelody = [];
+    let seedIdx = 0;
+    phraseItems.forEach((item, idx) => {
+      if (item.type === "breath") {
+        // Satir/virgul sonundaki bir onceki notayi biraz uzat ve kisa nefes es'i ekle
+        if (syncedMelody.length > 0 && syncedMelody[syncedMelody.length - 1].pitch !== "REST") {
+          syncedMelody[syncedMelody.length - 1].beats = Math.max(1.5, syncedMelody[syncedMelody.length - 1].beats);
+        }
+        syncedMelody.push({ pitch: "REST", beats: item.beats, lyric: "" });
+      } else {
+        const templateNote = pacedSeed[seedIdx % pacedSeed.length];
+        seedIdx++;
+        const isLastSyl = (idx === phraseItems.length - 1);
+        syncedMelody.push({
+          pitch: templateNote.pitch,
+          beats: isLastSyl ? 2.0 : templateNote.beats,
+          lyric: item.text
+        });
+      }
+    });
+
+    currentScore.staves.melody = syncedMelody;
+
+    // 3. Armoni, Bas ve Ritim kanallarini da yeni melodi vurus toplamına esitle
+    const targetTotalBeats = syncedMelody.reduce((s, n) => s + (n.beats || 1.0), 0);
+    ["harmony", "bass", "rhythm"].forEach(role => {
+      const orig = currentScore.staves[role] || [];
+      if (orig.length === 0) return;
+      const expanded = [];
+      let accBeats = 0;
+      let i = 0;
+      while (accBeats < targetTotalBeats - 0.01) {
+        const ev = JSON.parse(JSON.stringify(orig[i % orig.length]));
+        if ((ev.beats || 1.0) < 0.75) ev.beats = 1.0;
+        if (accBeats + ev.beats > targetTotalBeats) {
+          ev.beats = Math.max(0.5, Number((targetTotalBeats - accBeats).toFixed(2)));
+        }
+        expanded.push(ev);
+        accBeats += ev.beats;
+        i++;
+      }
+      currentScore.staves[role] = expanded;
+    });
+
+    // 4. Vokal telaffuzunun yetismesi icin asiri yuksek BPM'i dogal sarki temposuna (92-112 BPM) dengele
+    const curBpm = Number(currentScore.bpm || 116);
+    if (curBpm > 114) {
+      setBpm(104, true);
+    } else if (curBpm < 76) {
+      setBpm(88, true);
+    }
+
+    const syncedSec = getScoreTotalSeconds();
+    updateLyricSyncStatsBadge(syllables.length, lineCount, syncedSec, true);
+    drawSheet();
+    if (!silent) {
+      document.getElementById("renderStatusText").textContent =
+        `✅ ${syllables.length} hece ve ${lineCount} satır notalara & zamana (${formatSecMMSS(syncedSec)}) senkronlandı.`;
+    }
+    return;
+  }
+
+  // Yazarken canli onizleme eslemesi (mevcut notalar uzerinde)
   const melody = currentScore.staves.melody || [];
   let tIdx = 0;
-
   for (let i = 0; i < melody.length; i++) {
     const note = melody[i];
     if (!note.pitch || note.pitch === "REST") continue;
-
     const nextNote = melody[i + 1];
-    const tok = tokens[tIdx] || "";
+    const tok = syllables[tIdx] || "";
     if (nextNote && nextNote.pitch === "REST" && tok.endsWith("-")) {
       note.lyric = "";
       continue;
     }
-
     note.lyric = tok;
     if (tok) tIdx++;
   }
 
+  const estSec = Math.max(getScoreTotalSeconds(), syllables.length * 0.46 + lineCount * 1.1);
+  updateLyricSyncStatsBadge(syllables.length, lineCount, estSec, false);
   drawSheet();
-  if (!silent) {
-    document.getElementById("renderStatusText").textContent = `${tIdx} hece (${tokens.length} toplam) notalara eşlendi.`;
-  }
 }
 
 function renderToolbar() {
@@ -1026,6 +1340,29 @@ function getScoreTotalSeconds() {
   return totalBeats * beatSec;
 }
 
+function getEffectiveAudioDuration() {
+  const audio = document.getElementById("masterAudioPlayer");
+  const scoreSec = getScoreTotalSeconds();
+  if (audio && audio.duration && isFinite(audio.duration) && audio.duration > 0) {
+    return audio.duration;
+  }
+  return scoreSec;
+}
+
+function timeToBeatPos(sec) {
+  const melody = currentScore?.staves?.melody || [];
+  const totalBeats = melody.reduce((acc, ev) => acc + (ev.beats || 1.0), 0) || 1;
+  const effDur = getEffectiveAudioDuration() || 1;
+  return Math.max(0, Math.min(totalBeats, (sec / effDur) * totalBeats));
+}
+
+function beatPosToTime(beatPos) {
+  const melody = currentScore?.staves?.melody || [];
+  const totalBeats = melody.reduce((acc, ev) => acc + (ev.beats || 1.0), 0) || 1;
+  const effDur = getEffectiveAudioDuration() || 1;
+  return Math.max(0, Math.min(effDur, (beatPos / totalBeats) * effDur));
+}
+
 function beatPosToX(beatPos) {
   const melody = currentScore?.staves?.melody || [];
   let x = 125, b0 = 0;
@@ -1072,8 +1409,7 @@ function updateMiddleTransportUI() {
   const beatBadge = document.getElementById("midBeatBadge");
   if (!audio || !playBtn) return;
 
-  const scoreSec = getScoreTotalSeconds();
-  const totalSec = (audio.duration && isFinite(audio.duration) && audio.duration > 0) ? audio.duration : scoreSec;
+  const totalSec = getEffectiveAudioDuration();
   const curSec = audio.currentTime || 0;
 
   if (curEl) curEl.textContent = formatSecMMSS(curSec);
@@ -1083,8 +1419,7 @@ function updateMiddleTransportUI() {
     slider.value = totalSec > 0 ? Math.round((curSec / totalSec) * 1000) : 0;
   }
 
-  const bpm = Math.max(40, currentScore?.bpm || 116);
-  const beatPos = curSec / (60 / bpm);
+  const beatPos = timeToBeatPos(curSec);
   const tsNum = parseInt(String(currentScore?.time_signature || "4/4").split("/")[0], 10) || 4;
   const measureNum = Math.floor(beatPos / tsNum) + 1;
   const beatInMeasure = Math.floor(beatPos % tsNum) + 1;
@@ -1260,12 +1595,11 @@ document.getElementById("scoreSvg").addEventListener("click", (e) => {
 
   if (y <= 20) {
     const beatPos = xToBeatPos(x);
-    const beatSec = 60 / Math.max(40, currentScore.bpm || 116);
-    const targetSec = beatPos * beatSec;
+    const targetSec = beatPosToTime(beatPos);
     updatePlayheadVisual(x);
     const audio = document.getElementById("masterAudioPlayer");
     if (audio && audio.src && audio.src !== window.location.href) {
-      audio.currentTime = Math.min(audio.duration || targetSec, targetSec);
+      audio.currentTime = Math.min(getEffectiveAudioDuration(), targetSec);
     }
     updateMiddleTransportUI();
     return;
@@ -1446,15 +1780,22 @@ async function renderAndPlay() {
   }
 
   try {
-    applyLyricsToNotes(true);
     const rawLyricsVal = document.getElementById("lyricsInput").value.trim();
+    if (rawLyricsVal) {
+      applyLyricsToNotes(true, true);
+    } else {
+      applyLyricsToNotes(true, false);
+    }
     const payload = {
       ...currentScore,
       lyrics_text: rawLyricsVal,
       engine_choice: engineChoice,
       quality_steps: 10,
       target_duration_sec: Number(document.getElementById("targetDurationSelect")?.value || 0),
-      export_mp4: wantMp4
+      export_mp4: wantMp4,
+      clip_mode: selectedClipMode,
+      clip_file_id: uploadedClipFileId,
+      clip_prompt: document.getElementById("aiClipPromptInput")?.value || ""
     };
     const res = await fetch("/api/render", {
       method: "POST",
@@ -1521,7 +1862,10 @@ async function saveAsFormat(fmt) {
       body: JSON.stringify({
         wav_filename: lastRenderedWavFilename,
         format: fmt,
-        score: fmt === "mp4" ? currentScore : null
+        score: fmt === "mp4" ? currentScore : null,
+        clip_mode: selectedClipMode,
+        clip_file_id: uploadedClipFileId,
+        clip_prompt: document.getElementById("aiClipPromptInput")?.value || ""
       })
     });
     if (!res.ok) {
@@ -1627,12 +1971,9 @@ async function toggleMiddlePlayPause() {
 
 function onMidSeekInput(val) {
   isUserScrubbing = true;
-  const audio = document.getElementById("masterAudioPlayer");
-  const scoreSec = getScoreTotalSeconds();
-  const totalSec = (audio && audio.duration && isFinite(audio.duration) && audio.duration > 0) ? audio.duration : scoreSec;
+  const totalSec = getEffectiveAudioDuration();
   const targetSec = (Number(val) / 1000) * totalSec;
-  const beatSec = 60 / Math.max(40, currentScore?.bpm || 116);
-  const x = beatPosToX(targetSec / beatSec);
+  const x = beatPosToX(timeToBeatPos(targetSec));
   updatePlayheadVisual(x);
   const sc = document.getElementById("sheetContainer");
   if (sc) sc.scrollLeft = Math.max(0, x - 160);
@@ -1643,8 +1984,7 @@ function onMidSeekInput(val) {
 function onMidSeekCommit(val) {
   isUserScrubbing = false;
   const audio = document.getElementById("masterAudioPlayer");
-  const scoreSec = getScoreTotalSeconds();
-  const totalSec = (audio && audio.duration && isFinite(audio.duration) && audio.duration > 0) ? audio.duration : scoreSec;
+  const totalSec = getEffectiveAudioDuration();
   const targetSec = (Number(val) / 1000) * totalSec;
   if (audio && audio.src && audio.src !== window.location.href) {
     audio.currentTime = Math.min(totalSec, Math.max(0, targetSec));
