@@ -507,74 +507,8 @@ def _wrap_text_lines(text: str, max_chars: int = 68, max_lines: int = 3) -> list
 
 
 def render_mp4_video(score: dict, wav_path: Path, mp4_path: Path) -> bool:
-    try:
-        import imageio_ffmpeg
-        from PIL import Image, ImageDraw
-        ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
-
-        width, height = 1280, 720
-        bg = Image.new("RGB", (width, height), (11, 17, 32))
-        draw = ImageDraw.Draw(bg)
-
-        # Dış ve iç stüdyo çerçevesi
-        draw.rectangle([32, 32, width - 32, height - 32], outline=(245, 158, 11), width=3)
-        draw.rectangle([46, 46, width - 46, height - 46], outline=(30, 41, 59), width=2)
-        draw.rectangle([72, 410, width - 72, 650], fill=(15, 23, 42), outline=(51, 65, 85), width=1)
-
-        font_badge = _load_pil_font(18, bold=True)
-        font_title = _load_pil_font(40, bold=True)
-        font_meta = _load_pil_font(21, bold=False)
-        font_lyrics = _load_pil_font(20, bold=False)
-
-        title = (score.get("title") or "NotaStüdyo Eseri").strip()
-        composer = (score.get("composer") or "NotaStüdyo Maestro Pro").strip()
-        bpm = score.get("bpm", 116)
-        key_sig = (score.get("key_signature") or "").strip()
-
-        raw_lyrics = (score.get("lyrics_text") or "").strip()
-        if not raw_lyrics:
-            words = [
-                n.get("lyric", "") for n in score.get("staves", {}).get("melody", []) if n.get("lyric")
-            ]
-            raw_lyrics = " ".join(words)
-        lyric_lines = _wrap_text_lines(raw_lyrics, max_chars=74, max_lines=3)
-
-        draw.text((76, 72), "NOTASTÜDYO MAESTRO PRO   •   STÜDYO KAYDI", fill=(245, 158, 11), font=font_badge)
-        draw.text((76, 112), title[:48], fill=(248, 250, 252), font=font_title)
-        meta_line = f"Besteci / Düzenleme: {composer}   •   Tempo: {bpm} BPM"
-        if key_sig:
-            meta_line += f"   •   {key_sig}"
-        draw.text((76, 174), meta_line, fill=(148, 163, 184), font=font_meta)
-
-        y_cursor = 228
-        for idx_l, ln in enumerate(lyric_lines):
-            prefix = "Sözler: " if idx_l == 0 else "            "
-            draw.text((76, y_cursor), prefix + ln, fill=(253, 230, 138), font=font_lyrics)
-            y_cursor += 32
-
-        with tempfile.TemporaryDirectory() as tmpdir:
-            cover_png = Path(tmpdir) / "cover.png"
-            bg.save(cover_png)
-
-            filter_complex = (
-                "[1:a]showwaves=s=1120x210:mode=cline:rate=25:colors=0xf59e0b|0x38bdf8[waves];"
-                "[0:v][waves]overlay=80:425[outv]"
-            )
-            cmd = [
-                ffmpeg_exe, "-y",
-                "-loop", "1", "-i", str(cover_png),
-                "-i", str(wav_path),
-                "-filter_complex", filter_complex,
-                "-map", "[outv]", "-map", "1:a",
-                "-c:v", "libx264", "-preset", "veryfast", "-tune", "stillimage",
-                "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
-                "-shortest", str(mp4_path)
-            ]
-            res = subprocess.run(cmd, capture_output=True, timeout=180)
-            return res.returncode == 0 and mp4_path.exists() and mp4_path.stat().st_size > 1000
-    except Exception as exc:
-        print(f"[MP4 Render] Hata: {exc}")
-        return False
+    from clip_generator import render_studio_clip_mp4
+    return render_studio_clip_mp4(score or {}, wav_path, mp4_path, temp_dir=wav_path.parent)
 
 
 def convert_wav_to_format(wav_path: Path, out_path: Path, target_fmt: str, score: dict | None = None) -> bool:

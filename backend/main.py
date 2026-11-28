@@ -17,6 +17,7 @@ from studio_ai_engine import (
     RENDER_PROGRESS,
 )
 from omr_reader import analyze_sheet_image, export_score_to_musicxml
+from clip_generator import generate_stage_preview_png
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend"
@@ -46,12 +47,18 @@ class ScorePayload(BaseModel):
     quality_steps: int = 10
     target_duration_sec: float = 0
     export_mp4: bool = False
+    clip_mode: str = "soundwave"  # "soundwave" | "concert_hall" | "ai_clip" | "custom_upload"
+    clip_file_id: str = ""
+    clip_prompt: str = ""
 
 
 class ExportFormatRequest(BaseModel):
     wav_filename: str
     format: str  # "wav" | "mp3" | "mp4" | "flac" | "ogg"
     score: dict | None = None
+    clip_mode: str = "soundwave"
+    clip_file_id: str = ""
+    clip_prompt: str = ""
 
 
 def cleanup_temp_renders(keep_filename: str | None = None, max_age_sec: int = 300):
@@ -111,7 +118,7 @@ def list_scores():
 @app.post("/api/scores")
 def save_score(payload: ScorePayload):
     target = SCORES_DIR / f"{payload.id}.json"
-    data = payload.model_dump(exclude={"export_mp4", "engine_choice", "quality_steps"})
+    data = payload.model_dump(exclude={"export_mp4", "engine_choice", "quality_steps", "clip_mode", "clip_file_id", "clip_prompt"})
     target.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     return {"status": "saved", "id": payload.id}
 
@@ -209,8 +216,12 @@ async def export_format(req: ExportFormatRequest):
     out_name = f"{src_wav.stem}.{fmt}"
     out_path = TEMP_RENDER_DIR / out_name
 
-    if not out_path.exists():
-        ok = await asyncio.to_thread(convert_wav_to_format, src_wav, out_path, fmt, req.score)
+    if fmt == "mp4" or not out_path.exists():
+        merged_score = dict(req.score or {})
+        merged_score["clip_mode"] = req.clip_mode or merged_score.get("clip_mode") or "soundwave"
+        merged_score["clip_file_id"] = req.clip_file_id or merged_score.get("clip_file_id") or ""
+        merged_score["clip_prompt"] = req.clip_prompt or merged_score.get("clip_prompt") or ""
+        ok = await asyncio.to_thread(convert_wav_to_format, src_wav, out_path, fmt, merged_score)
         if not ok or not out_path.exists():
             raise HTTPException(status_code=500, detail=f"{fmt.upper()} dönüştürme başarısız oldu")
 
@@ -282,6 +293,50 @@ async def upload_sheet(file: UploadFile = File(...)):
     target = SCORES_DIR / f"{score_data['id']}.json"
     target.write_text(json.dumps(score_data, ensure_ascii=False, indent=2), encoding="utf-8")
     return {"status": "ok", "score": score_data}
+
+
+
+
+class StagePreviewRequest(BaseModel):
+    score: dict
+    clip_mode: str = "concert_hall"
+    clip_prompt: str = ""
+
+
+@app.post("/api/upload-clip")
+async def upload_custom_clip(file: UploadFile = File(...)):
+    orig_name = file.filename or "clip.mp4"
+    ext = Path(orig_name).suffix.lower()
+    if ext not in (".mp4", ".mov", ".webm", ".mkv", ".avi", ".png", ".jpg", ".jpeg", ".webp"):
+        raise HTTPException(status_code=400, detail="Desteklenen klip formatları: MP4, MOV, WEBM, PNG, JPG")
+    uid = uuid.uuid4().hex[:8]
+    saved_name = f"custom_clip_{uid}{ext}"
+    saved_path = TEMP_RENDER_DIR / saved_name
+    raw = await file.read()
+    saved_path.write_bytes(raw)
+    return {
+        "status": "ok",
+        "clip_file_id": saved_name,
+        "original_name": orig_name,
+        "media_type": "video" if ext in (".mp4", ".mov", ".webm", ".mkv", ".avi") else "image",
+    }
+
+
+@app.post("/api/preview-stage-clip")
+async def preview_stage_clip(req: StagePreviewRequest):
+    uid = uuid.uuid4().hex[:8]
+    prev_name = f"stage_preview_{uid}.png"
+    prev_path = TEMP_RENDER_DIR / prev_name
+    ok = await asyncio.to_thread(
+        generate_stage_preview_png,
+        req.score,
+        req.clip_mode,
+        req.clip_prompt,
+        prev_path,
+    )
+    if not ok or not prev_path.exists():
+        raise HTTPException(status_code=500, detail="Sahne önizlemesi oluşturulamadı")
+    return {"status": "ok", "preview_url": f"/api/temp-media/{prev_name}"}
 
 
 app.mount("/exports", StaticFiles(directory=str(EXPORTS_DIR)), name="exports")

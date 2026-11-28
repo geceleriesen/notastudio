@@ -299,10 +299,15 @@ def build_studio_prompt(score: dict, formatted_lyrics: str) -> tuple[str, float,
     melody = score.get("staves", {}).get("melody", [])
     total_beats = sum(float(n.get("beats", 1.0)) for n in melody)
     score_sec = total_beats * (60.0 / max(45, bpm))
-    word_count = len(re.sub(r"\[.*?\]", "", formatted_lyrics).split())
-    # Kelime basina ~1.05 sn nefes ve net telaffuz payi birak ki hizli tempoda kelimeler yutulmasin
-    lyrics_sec = max(12.0, word_count * 1.05 + 3.5)
-    duration_sec = float(np.clip(max(score_sec, lyrics_sec), 12.0, 120.0))
+    clean_lyric_body = re.sub(r"\[.*?\]", "", formatted_lyrics).strip()
+    words_list = clean_lyric_body.split()
+    word_count = len(words_list)
+    line_count = len([ln for ln in clean_lyric_body.splitlines() if ln.strip()])
+    # Turkce ve cok dilli hece sayisini hesaplayarak sarkinin tam soz suresine oturmasini sagla
+    vowel_groups = sum(max(1, len(re.findall(r"[aeıioöuüAEIİOÖUÜyY]+", w))) for w in words_list)
+    syllable_count = max(word_count, vowel_groups)
+    lyrics_sec = max(10.0, syllable_count * 0.46 + line_count * 1.15 + 3.2)
+    duration_sec = float(np.clip(max(score_sec, lyrics_sec), 10.0, 120.0))
 
     return full_prompt, duration_sec, lang_code
 
