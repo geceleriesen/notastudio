@@ -1,0 +1,82 @@
+{
+  "id": "uskudara_gider_iken",
+  "title": "Üsküdar'a Gider İken — Senfonik & Vokal",
+  "composer": "Geleneksel İstanbul Türküsü (Nihavend)",
+  "bpm": 106,
+  "time_signature": "4/4",
+  "key_signature": "Do Minör / Nihavend (Bb, Eb, Ab)",
+  "instruments": {
+    "oud_baglama": { "count": 2, "role": "melody" },
+    "violin": { "count": 3, "role": "harmony" },
+    "cello": { "count": 2, "role": "bass" },
+    "drums": { "count": 1, "role": "rhythm" }
+  },
+  "vocals": {
+    "turk_sanat_k": 1
+  },
+  "staves": {
+    "melody": [
+      { "pitch": "C4", "beats": 1.0, "lyric": "Üs-" },
+      { "pitch": "D4", "beats": 1.0, "lyric": "kü-" },
+      { "pitch": "Eb4", "beats": 1.0, "lyric": "dar-" },
+      { "pitch": "F4", "beats": 1.0, "lyric": "a" },
+      { "pitch": "G4", "beats": 1.5, "lyric": "gi-" },
+      { "pitch": "Ab4", "beats": 0.5, "lyric": "der" },
+      { "pitch": "G4", "beats": 1.0, "lyric": "i-" },
+      { "pitch": "F4", "beats": 1.0, "lyric": "ken" },
+      { "pitch": "G4", "beats": 1.0, "lyric": "al-" },
+      { "pitch": "F4", "beats": 1.0, "lyric": "dı" },
+      { "pitch": "Eb4", "beats": 1.0, "lyric": "da" },
+      { "pitch": "D4", "beats": 1.0, "lyric": "bir" },
+      { "pitch": "Eb4", "beats": 1.5, "lyric": "yağ-" },
+      { "pitch": "D4", "beats": 0.5, "lyric": "mur" },
+      { "pitch": "C4", "beats": 2.0, "lyric": "yağ-" },
+      { "pitch": "G4", "beats": 1.0, "lyric": "Kâ-" },
+      { "pitch": "G4", "beats": 1.0, "lyric": "ti-" },
+      { "pitch": "Ab4", "beats": 1.0, "lyric": "bi-" },
+      { "pitch": "Bb4", "beats": 1.0, "lyric": "min" },
+      { "pitch": "Ab4", "beats": 1.0, "lyric": "set-" },
+      { "pitch": "G4", "beats": 1.0, "lyric": "re-" },
+      { "pitch": "F4", "beats": 1.0, "lyric": "si" },
+      { "pitch": "G4", "beats": 1.0, "lyric": "u-" },
+      { "pitch": "F4", "beats": 1.0, "lyric": "zun" },
+      { "pitch": "Eb4", "beats": 1.0, "lyric": "e-" },
+      { "pitch": "D4", "beats": 1.0, "lyric": "te-" },
+      { "pitch": "C4", "beats": 2.0, "lyric": "ği" }
+    ],
+    "harmony": [
+      { "pitches": ["C4", "Eb4", "G4"], "beats": 4.0 },
+      { "pitches": ["F4", "Ab4", "C5"], "beats": 4.0 },
+      { "pitches": ["G3", "B3", "D4", "F4"], "beats": 4.0 },
+      { "pitches": ["C4", "Eb4", "G4"], "beats": 4.0 },
+      { "pitches": ["Eb4", "G4", "Bb4"], "beats": 4.0 },
+      { "pitches": ["F4", "Ab4", "C5"], "beats": 4.0 },
+      { "pitches": ["G3", "B3", "D4"], "beats": 2.0 },
+      { "pitches": ["C4", "Eb4", "G4"], "beats": 2.0 }
+    ],
+    "bass": [
+      { "pitch": "C3", "beats": 2.0 }, { "pitch": "G2", "beats": 2.0 },
+      { "pitch": "F2", "beats": 2.0 }, { "pitch": "C3", "beats": 2.0 },
+      { "pitch": "G2", "beats": 2.0 }, { "pitch": "D3", "beats": 2.0 },
+      { "pitch": "C3", "beats": 2.0 }, { "pitch": "G2", "beats": 2.0 },
+      { "pitch": "Eb2", "beats": 2.0 }, { "pitch": "Bb2", "beats": 2.0 },
+      { "pitch": "F2", "beats": 2.0 }, { "pitch": "C3", "beats": 2.0 },
+      { "pitch": "G2", "beats": 2.0 }, { "pitch": "C3", "beats": 2.0 }
+    ],
+    "rhythm": [
+      { "pitch": "C3", "beats": 1.0 }, { "pitch": "G2", "beats": 1.0 },
+      { "pitch": "C3", "beats": 1.0 }, { "pitch": "G2", "beats": 1.0 },
+      { "pitch": "C3", "beats": 1.0 }, { "pitch": "G2", "beats": 1.0 },
+      { "pitch": "C3", "beats": 1.0 }, { "pitch": "G2", "beats": 1.0 },
+      { "pitch": "C3", "beats": 1.0 }, { "pitch": "G2", "beats": 1.0 },
+      { "pitch": "C3", "beats": 1.0 }, { "pitch": "G2", "beats": 1.0 },
+      { "pitch": "C3", "beats": 1.0 }, { "pitch": "G2", "beats": 1.0 },
+      { "pitch": "C3", "beats": 1.0 }, { "pitch": "G2", "beats": 1.0 },
+      { "pitch": "C3", "beats": 1.0 }, { "pitch": "G2", "beats": 1.0 },
+      { "pitch": "C3", "beats": 1.0 }, { "pitch": "G2", "beats": 1.0 },
+      { "pitch": "C3", "beats": 1.0 }, { "pitch": "G2", "beats": 1.0 },
+      { "pitch": "C3", "beats": 1.0 }, { "pitch": "G2", "beats": 1.0 },
+      { "pitch": "C3", "beats": 2.0 }, { "pitch": "C3", "beats": 2.0 }
+    ]
+  }
+}
